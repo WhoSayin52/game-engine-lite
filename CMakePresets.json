@@ -1,0 +1,16 @@
+{
+	"version": 10,
+	"configurePresets": [
+		{
+			"name": "default",
+			"displayName": "g++ Ninja Multi-Config",
+			"generator": "Ninja Multi-Config",
+			"binaryDir": "${sourceDir}/build",
+			"cacheVariables": {
+				"CMAKE_CXX_FLAGS": "-pedantic-errors -Wall -Wextra -Wconversion -Wsign-conversion -Werror -Weffc++",
+				"CMAKE_CXX_FLAGS_DEBUG": "-Og -ggdb",
+				"CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
+			}
+		}
+	]
+}
