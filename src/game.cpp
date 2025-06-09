@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -20,10 +21,10 @@ void Game::init() {
 		return;
 	}
 
-	//SDL_DisplayMode display_mode{};
-	//SDL_GetCurrentDisplayMode(0, &display_mode);
-	//window_width = display_mode.w;
-	//window_height = display_mode.h;
+	SDL_DisplayMode display_mode{};
+	SDL_GetCurrentDisplayMode(0, &display_mode);
+	window_width = display_mode.w;
+	window_height = display_mode.h;
 	window = SDL_CreateWindow(
 		nullptr,
 		SDL_WINDOWPOS_CENTERED,
@@ -62,8 +63,12 @@ void Game::run() {
 	}
 }
 
-void Game::setup() {
+glm::vec2 player_pos{};
+glm::vec2 player_vel{};
 
+void Game::setup() {
+	player_pos = glm::vec2(10.0, 20.0);
+	player_vel = glm::vec2(100.0, 0);
 }
 
 void Game::input() {
@@ -83,7 +88,15 @@ void Game::input() {
 }
 
 void Game::update() {
+	Uint32 time_to_wait = MILLISECONDS_PRE_FRAME - (SDL_GetTicks() - millisecs_prev_frame);
+	if (time_to_wait <= MILLISECONDS_PRE_FRAME) SDL_Delay(time_to_wait);
 
+	double delta_time = (SDL_GetTicks() - millisecs_prev_frame) / 1000.0;
+
+	millisecs_prev_frame = SDL_GetTicks();
+
+	player_pos.x += static_cast<float>(player_vel.x * delta_time);
+	player_pos.y += static_cast<float>(player_vel.y * delta_time);
 }
 
 void Game::render() {
@@ -96,7 +109,11 @@ void Game::render() {
 	SDL_FreeSurface(surface);
 	surface = nullptr;
 
-	SDL_Rect dest_rect{ 10, 10, 32, 32 };
+	SDL_Rect dest_rect{
+		static_cast<int>(player_pos.x),
+		static_cast<int>(player_pos.y),
+		32,
+		32 };
 	SDL_RenderCopy(renderer, texture, nullptr, &dest_rect);
 	SDL_DestroyTexture(texture);
 
