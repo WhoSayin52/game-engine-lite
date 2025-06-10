@@ -1,5 +1,7 @@
 #include "game.hpp"
 
+#include "logger.hpp"
+
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -8,16 +10,17 @@
 
 Game::Game() :is_running{ false }
 {
-
+	Logger::log("Game constructor called!");
 }
 
 Game::~Game() {
-
+	Logger::log("Game destructor called!");
 }
 
 void Game::init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		fprintf(stderr, "Failed to initialize SDL: SDL Error: %s\n", SDL_GetError());
+		std::string err(SDL_GetError());
+		Logger::err("Failed to initialize SDL: SDL Error: " + err);
 		return;
 	}
 
@@ -35,7 +38,8 @@ void Game::init() {
 	);
 
 	if (window == nullptr) {
-		fprintf(stderr, "Failed to create window: SDL Error: %s\n", SDL_GetError());
+		std::string err{ SDL_GetError() };
+		Logger::err("Failed to create window: SDL Error: " + err);
 		return;
 	}
 
@@ -46,7 +50,8 @@ void Game::init() {
 	);
 
 	if (renderer == nullptr) {
-		fprintf(stderr, "Failed to create renderer: SDL Error: %s\n", SDL_GetError());
+		std::string err{ SDL_GetError() };
+		Logger::err("Failed to create renderer: SDL Error: " + err);
 		return;
 	}
 	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
