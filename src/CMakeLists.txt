@@ -1,3 +1,4 @@
 target_sources(${EXE} PRIVATE main.cpp)
-target_sources(${EXE} PRIVATE game.hpp game.cpp)
-target_sources(${EXE} PRIVATE logger.hpp logger.cpp)
+
+add_subdirectory(game)
+add_subdirectory(logger)
