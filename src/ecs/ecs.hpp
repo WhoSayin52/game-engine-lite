@@ -3,12 +3,13 @@
 
 #include <bitset>
 #include <vector>
+#include <cstdint>
 
 /*
 * Contains global vars for ECS configs
 */
 namespace ecs_config {
-	constexpr unsigned int max_components = 32;
+	constexpr std::uint32_t max_components = 32;
 }
 
 /*
@@ -69,13 +70,41 @@ private:
 	std::vector<Entity> entities{};
 };
 
-class Registry {
+class IPool {
+	virtual ~IPool() {}
+};
 
+template <typename T>
+class Pool : public IPool {
+public:
+	Pool(std::size_t = 100) : data(size) {}
+	~Pool() final override = default;
+
+	bool empty() const { return data.empty(); }
+	std::size_t size() const { return data.size(); }
+	void resize(std::size_t size) { data.resize(size); }
+	void clear() { data.clear(); }
+	void add(T object) { data.push_back(object); }
+	void set(std::size_t index, T object) { data[index] = object; }
+	T& get(int index) { return static_cast<T&>(data[index]); }
+
+	T& operator[](std::size_t index) { return data[index]; }
+
+private:
+	std::vector<T> data{};
+};
+
+class Registry {
+public:
+
+private:
+	int entity_count{};
+	std::vector<IPool*> component_pools{};
 };
 
 template <typename TComponent>
 void System::require_component() {
-	const auto component_id = Component<TComponent>::get_id();
+	const int component_id = Component<TComponent>::get_id();
 	component_signature.set(component_id);
 }
 
