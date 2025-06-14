@@ -3,7 +3,9 @@
 
 #include <bitset>
 #include <vector>
+#include <unordered_map>
 #include <cstdint>
+#include <typeindex>
 
 /*
 * Contains global vars for ECS configs
@@ -96,10 +98,13 @@ private:
 
 class Registry {
 public:
+	Registry() = default;
 
 private:
 	int entity_count{};
 	std::vector<IPool*> component_pools{};
+	std::vector<Signature> entity_component_signature{};
+	std::unordered_map <std::type_index, System*> systems{};
 };
 
 template <typename TComponent>
