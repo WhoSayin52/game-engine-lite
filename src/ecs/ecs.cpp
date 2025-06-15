@@ -3,6 +3,7 @@
 #include "../logger/logger.hpp"
 
 #include <algorithm>
+#include <string>
 
 int Entity::get_id() const {
 	return id;
@@ -36,7 +37,10 @@ const Signature& System::get_component_signature() const {
 }
 
 void Registry::update() {
-
+	for (Entity entity : entities_to_add) {
+		add_entity_to_systems(entity);
+	}
+	entities_to_add.clear();
 }
 
 void Registry::add_entity_to_systems(Entity entity) {
@@ -58,7 +62,13 @@ Entity Registry::create_entity() {
 
 	entities_to_add.insert(entity);
 
-	Logger::log("Registry: Entity created, id: " + entity.get_id());
+	std::size_t id{ static_cast<std::size_t>(entity.get_id()) };
+
+	if (id >= entity_component_signatures.size()) {
+		entity_component_signatures.resize(id + 1);
+	}
+
+	Logger::log("Registry: Entity created, id: " + std::to_string(entity.get_id()));
 
 	return entity;
 }

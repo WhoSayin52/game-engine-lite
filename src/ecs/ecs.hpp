@@ -8,6 +8,7 @@
 #include <utility>
 #include <cstdint>
 #include <typeindex>
+#include <memory>
 
 /*
 * Contains global vars for ECS configs
@@ -133,9 +134,9 @@ public:
 
 private:
 	int entity_count{};
-	std::vector<IPool*> component_pools{};
+	std::vector<std::shared_ptr<IPool>> component_pools{};
 	std::vector<Signature> entity_component_signatures{};
-	std::unordered_map <std::type_index, System*> systems{};
+	std::unordered_map <std::type_index, std::shared_ptr<System>> systems{};
 	std::set<Entity> entities_to_add{};
 	std::set<Entity> entities_to_kill{};
 };
@@ -156,10 +157,10 @@ void Registry::add_component(Entity entity, Args&& ...args) {
 	}
 
 	if (component_pools[component_id] == nullptr) {
-		component_pools[component_id] = new Pool<TComponent>;
+		component_pools[component_id] = std::make_shared<Pool<TComponent>>();
 	}
 
-	Pool<TComponent>* pool = component_pools[component_id];
+	std::shared_ptr<Pool<TComponent>> pool = std::static_pointer_cast<Pool<TComponent>>(component_pools[component_id]);
 
 	if (entity_id >= pool->size()) {
 		pool->resize(entity_count);
@@ -189,7 +190,7 @@ bool Registry::has_component(Entity entity) const {
 
 template <typename TSystem, typename ...Args>
 void Registry::add_system(TSystem system, Args&& ...args) {
-	TSystem* new_system{ new TSystem(std::forward<Args>(args)...) };
+	std::shared_ptr<TSystem> new_system{ std::make_shared<TSystem>(std::forward<Args>(args)...) };
 
 	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), new_system));
 }
@@ -208,7 +209,7 @@ bool Registry::has_system() const {
 template <typename TSystem>
 TSystem& Registry::get_system() const {
 	auto system{ systems.find(std::type_index(typeid(TSystem))) };
-	return *static_cast<TSystem*>(system->second);
+	return *std::static_pointer_cast<TSystem>(system->second);
 }
 
 #endif //ECS_HPP

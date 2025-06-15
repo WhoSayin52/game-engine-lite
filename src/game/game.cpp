@@ -9,8 +9,10 @@
 
 #include <cstdio>
 
-Game::Game() :is_running{ false }
+Game::Game()
 {
+	is_running = false;
+	registry = std::make_unique<Registry>();
 	Logger::log("Game constructor called!");
 }
 
@@ -70,7 +72,8 @@ void Game::run() {
 }
 
 void Game::setup() {
-
+	Entity tank{ registry->create_entity() };
+	Entity truck{ registry->create_entity() };
 }
 
 void Game::input() {

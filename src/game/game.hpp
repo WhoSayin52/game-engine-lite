@@ -1,7 +1,11 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include "../ecs/ecs.hpp"
+
 #include <SDL2/SDL_stdinc.h>
+
+#include <memory>
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -27,10 +31,11 @@ public:
 	int window_height{ 600 };
 
 private:
-	SDL_Window* window{ nullptr };
-	SDL_Renderer* renderer{ nullptr };
 	bool is_running{};
 	Uint32 millisecs_prev_frame{ 0 };
+	SDL_Window* window{ nullptr };
+	SDL_Renderer* renderer{ nullptr };
+	std::unique_ptr<Registry> registry{ nullptr };
 };
 
 #endif //GAME_HPP
