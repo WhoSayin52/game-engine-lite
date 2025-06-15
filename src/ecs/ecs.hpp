@@ -4,6 +4,8 @@
 #include <bitset>
 #include <vector>
 #include <unordered_map>
+#include <set>
+#include <utility>
 #include <cstdint>
 #include <typeindex>
 
@@ -37,14 +39,14 @@ private:
 
 struct IComponent {
 protected:
-	static int next_id;
+	inline static int next_id{};
 };
 
 template <typename T>
 class Component : public IComponent {
 public:
 	static int get_id() {
-		static int id = next_id++;
+		static const int id = next_id++;
 		return id;
 	}
 
@@ -100,17 +102,113 @@ class Registry {
 public:
 	Registry() = default;
 
+	void update();
+	void add_entity_to_systems(Entity entity);
+
+	// Entity managment
+	Entity create_entity();
+
+	// Component managment
+	template <typename TComponent, typename ...Args>
+	void add_component(Entity entity, Args&& ...args);
+
+	template <typename TComponent>
+	void remove_component(Entity entity);
+
+	template <typename TComponent>
+	bool has_component(Entity entity) const;
+
+	// System managment
+	template <typename TSystem, typename ...Args>
+	void add_system(TSystem system, Args&& ...args);
+
+	template <typename TSystem>
+	void remove_system();
+
+	template <typename TSystem>
+	bool has_system() const;
+
+	template <typename TSystem>
+	TSystem& get_system() const;
+
 private:
 	int entity_count{};
 	std::vector<IPool*> component_pools{};
-	std::vector<Signature> entity_component_signature{};
+	std::vector<Signature> entity_component_signatures{};
 	std::unordered_map <std::type_index, System*> systems{};
+	std::set<Entity> entities_to_add{};
+	std::set<Entity> entities_to_kill{};
 };
 
 template <typename TComponent>
 void System::require_component() {
 	const int component_id = Component<TComponent>::get_id();
 	component_signature.set(component_id);
+}
+
+template <typename TComponent, typename ...Args>
+void Registry::add_component(Entity entity, Args&& ...args) {
+	const int component_id{ Component<TComponent>::get_id() };
+	const int entity_id{ entity.get_id() };
+
+	if (component_id >= component_pools.size()) {
+		component_pools.resize(component_id + 1, nullptr);
+	}
+
+	if (component_pools[component_id] == nullptr) {
+		component_pools[component_id] = new Pool<TComponent>;
+	}
+
+	Pool<TComponent>* pool = component_pools[component_id];
+
+	if (entity_id >= pool->size()) {
+		pool->resize(entity_count);
+	}
+
+	TComponent new_component{ std::forward<Args>(args)... };
+
+	pool->set(entity_id, new_component);
+	entity_component_signatures[entity_id].set(component_id);
+}
+
+template <typename TComponent>
+void Registry::remove_component(Entity entity) {
+	const int component_id{ TComponent::get_id() };
+	const int entity_id{ entity.get_id() };
+
+	entity_component_signatures[entity_id].set(component_id, false);
+}
+
+template <typename TComponent>
+bool Registry::has_component(Entity entity) const {
+	const int component_id{ TComponent::get_id() };
+	const int entity_id{ entity.get_id() };
+
+	return entity_component_signatures[entity_id].test(component_id);
+}
+
+template <typename TSystem, typename ...Args>
+void Registry::add_system(TSystem system, Args&& ...args) {
+	TSystem* new_system{ new TSystem(std::forward<Args>(args)...) };
+
+	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), new_system));
+}
+
+template <typename TSystem>
+void Registry::remove_system() {
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	systems.erase(system);
+}
+
+template <typename TSystem>
+bool Registry::has_system() const {
+	return  systems.find(std::type_index(typeid(TSystem))) != systems.end();
+}
+
+template <typename TSystem>
+TSystem& Registry::get_system() const {
+	auto system{ systems.find(std::type_index(typeid(TSystem))) };
+	return *static_cast<TSystem*>(system->second);
 }
 
 #endif //ECS_HPP

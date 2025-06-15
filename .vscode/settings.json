@@ -58,6 +58,8 @@
 		"chrono": "cpp",
 		"ratio": "cpp",
 		"format": "cpp",
-		"span": "cpp"
+		"span": "cpp",
+		"set": "cpp",
+		"typeindex": "cpp"
 	}
 }

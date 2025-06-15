@@ -1,5 +1,7 @@
 #include "ecs.hpp"
 
+#include "../logger/logger.hpp"
+
 #include <algorithm>
 
 int Entity::get_id() const {
@@ -26,8 +28,38 @@ void System::remove_entity(Entity entity) {
 
 const std::vector<Entity>& System::get_entities() const {
 	return entities;
-}
+}	std::set<Entity> entities_to_add{};
+std::set<Entity> entities_to_kill{};
 
 const Signature& System::get_component_signature() const {
 	return component_signature;
 }
+
+void Registry::update() {
+
+}
+
+void Registry::add_entity_to_systems(Entity entity) {
+	const int entity_id{ entity.get_id() };
+	const Signature& entity_component_signature{ entity_component_signatures[static_cast<std::size_t>(entity_id)] };
+
+	for (auto& pair : systems) {
+		const Signature& system_component_signature{ pair.second->get_component_signature() };
+
+		bool is_interested{ (entity_component_signature & system_component_signature) == system_component_signature };
+		if (is_interested) {
+			pair.second->add_entity(entity);
+		}
+	}
+}
+
+Entity Registry::create_entity() {
+	Entity entity{ entity_count++ };
+
+	entities_to_add.insert(entity);
+
+	Logger::log("Registry: Entity created, id: " + entity.get_id());
+
+	return entity;
+}
+
