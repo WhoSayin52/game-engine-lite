@@ -58,7 +58,7 @@ void Registry::add_entity_to_systems(Entity entity) {
 }
 
 Entity Registry::create_entity() {
-	Entity entity{ entity_count++ };
+	Entity entity{ entity_count++, this };
 
 	entities_to_add.insert(entity);
 

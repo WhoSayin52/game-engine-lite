@@ -1,5 +1,7 @@
 #include "game.hpp"
 
+#include "../components/transform_component.hpp"
+#include "../components/rigidbody_component.hpp"
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 
@@ -73,7 +75,12 @@ void Game::run() {
 
 void Game::setup() {
 	Entity tank{ registry->create_entity() };
-	Entity truck{ registry->create_entity() };
+
+	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+
+	tank.remove_component<TransformComponent>();
+	tank.remove_component<RigidBodyComponent>();
 }
 
 void Game::input() {
