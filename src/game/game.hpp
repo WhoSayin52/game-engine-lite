@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include "../ecs/ecs.hpp"
+#include "../asset_manager/asset_manager.hpp"
 
 #include <SDL2/SDL_stdinc.h>
 
@@ -36,6 +37,7 @@ private:
 	SDL_Window* window{ nullptr };
 	SDL_Renderer* renderer{ nullptr };
 	std::unique_ptr<Registry> registry{ nullptr };
+	std::unique_ptr<AssetManager> asset_manager{ nullptr };
 };
 
 #endif //GAME_HPP
