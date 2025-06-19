@@ -109,7 +109,7 @@ public:
 	void clear() { data.clear(); }
 	void add(T object) { data.push_back(object); }
 	void set(std::size_t index, T object) { data[index] = object; }
-	T& get(int index) { return static_cast<T&>(data[index]); }
+	T& get(std::size_t index) { return static_cast<T&>(data[index]); }
 
 	T& operator[](std::size_t index) { return data[index]; }
 
@@ -142,7 +142,7 @@ public:
 
 	// System managment
 	template <typename TSystem, typename ...Args>
-	void add_system(TSystem system, Args&& ...args);
+	void add_system(Args&& ...args);
 
 	template <typename TSystem>
 	void remove_system();
@@ -185,7 +185,8 @@ TComponent& Entity::get_component() const {
 template <typename TComponent>
 void System::require_component() {
 	const int component_id = Component<TComponent>::get_id();
-	component_signature.set(component_id);
+	const std::size_t component_index{ static_cast<std::size_t>(component_id) };
+	component_signature.set(component_index);
 }
 
 template <typename TComponent, typename ...Args>
@@ -244,7 +245,7 @@ bool Registry::has_component(Entity entity) const {
 
 template <typename TComponent>
 TComponent& Registry::get_component(Entity entity) const {
-	const int component_id{ TComponent::get_id() };
+	const int component_id{ Component<TComponent>::get_id() };
 	const std::size_t component_index{ static_cast<std::size_t>(component_id) };
 
 	std::shared_ptr<Pool<TComponent>> component_pool{
@@ -253,11 +254,11 @@ TComponent& Registry::get_component(Entity entity) const {
 
 	const std::size_t entity_index{ static_cast<std::size_t>(entity.get_id()) };
 
-	return &(*component_pool->get(entity_index));
+	return component_pool->get(entity_index);
 }
 
 template <typename TSystem, typename ...Args>
-void Registry::add_system(TSystem system, Args&& ...args) {
+void Registry::add_system(Args&& ...args) {
 	std::shared_ptr<TSystem> new_system{ std::make_shared<TSystem>(std::forward<Args>(args)...) };
 
 	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), new_system));

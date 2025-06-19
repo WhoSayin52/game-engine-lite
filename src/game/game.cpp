@@ -2,6 +2,7 @@
 
 #include "../components/transform_component.hpp"
 #include "../components/rigidbody_component.hpp"
+#include "../systems/movement_system.hpp"
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 
@@ -74,13 +75,12 @@ void Game::run() {
 }
 
 void Game::setup() {
+	registry->add_system<MovementSystem>();
+
 	Entity tank{ registry->create_entity() };
 
 	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-
-	tank.remove_component<TransformComponent>();
-	tank.remove_component<RigidBodyComponent>();
 }
 
 void Game::input() {
@@ -106,6 +106,10 @@ void Game::update() {
 	[[maybe_unused]] double delta_time = (SDL_GetTicks() - millisecs_prev_frame) / 1000.0;
 
 	millisecs_prev_frame = SDL_GetTicks();
+
+	registry->get_system<MovementSystem>().update(delta_time);
+
+	registry->update();
 }
 
 void Game::render() {
