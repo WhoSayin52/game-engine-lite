@@ -2,7 +2,9 @@
 
 #include "../components/transform_component.hpp"
 #include "../components/rigidbody_component.hpp"
+#include "../components/sprite_component.hpp"
 #include "../systems/movement_system.hpp"
+#include "../systems/render_system.hpp"
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 
@@ -76,11 +78,17 @@ void Game::run() {
 
 void Game::setup() {
 	registry->add_system<MovementSystem>();
+	registry->add_system<RenderSystem>();
 
 	Entity tank{ registry->create_entity() };
-
 	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+	tank.add_component<SpriteComponent>(10.0f, 10.0f);
+
+	Entity truck{ registry->create_entity() };
+	truck.add_component<TransformComponent>(glm::vec2(1000.0, 1050.0), glm::vec2(1.0, 1.0), 0.0);
+	truck.add_component<RigidBodyComponent>(glm::vec2(-20.0, -10.0));
+	truck.add_component<SpriteComponent>(10.0f, 10.0f);
 }
 
 void Game::input() {
@@ -116,7 +124,7 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-
+	registry->get_system<RenderSystem>().update(renderer);
 
 	SDL_RenderPresent(renderer);
 }
