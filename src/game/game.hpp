@@ -22,6 +22,7 @@ public:
 	Game operator=(const Game&) = delete;
 	void init();
 	void run();
+	void load_level(int level);
 	void setup();
 	void input();
 	void update();
@@ -29,7 +30,7 @@ public:
 	void destroy();
 
 	int window_width{ 800 };
-	int window_height{ 600 };
+	int window_height{ 632 };
 
 private:
 	bool is_running{};

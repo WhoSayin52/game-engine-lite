@@ -60,6 +60,7 @@
 		"format": "cpp",
 		"span": "cpp",
 		"set": "cpp",
-		"typeindex": "cpp"
+		"typeindex": "cpp",
+		"fstream": "cpp"
 	}
 }

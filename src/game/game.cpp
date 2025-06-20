@@ -33,17 +33,17 @@ void Game::init() {
 		return;
 	}
 
-	SDL_DisplayMode display_mode{};
-	SDL_GetCurrentDisplayMode(0, &display_mode);
-	window_width = display_mode.w;
-	window_height = display_mode.h;
+	//SDL_DisplayMode display_mode{};
+	//SDL_GetCurrentDisplayMode(0, &display_mode);
+	//window_width = display_mode.w;
+	//window_height = display_mode.h;
 	window = SDL_CreateWindow(
 		nullptr,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		window_width,
 		window_height,
-		SDL_WINDOW_BORDERLESS
+		0
 	);
 
 	if (window == nullptr) {
@@ -63,7 +63,7 @@ void Game::init() {
 		Logger::err("Failed to create renderer: SDL Error: " + err);
 		return;
 	}
-	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	is_running = true;
 }
@@ -77,22 +77,29 @@ void Game::run() {
 	}
 }
 
-void Game::setup() {
+void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
 
 	asset_manager->add_texture(renderer, "tank_panther_right", "../assets/images/tank-panther-right.png");
 	asset_manager->add_texture(renderer, "truck_ford_right", "../assets/images/truck-ford-right.png");
 
+	asset_manager->add_map(renderer, "jungle_map", "../assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png");
+	asset_manager->load_map(registry.get(), "jungle_map");
+
 	Entity tank{ registry->create_entity() };
-	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(2.0, 2.0), 0.0);
+	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right");
 
 	Entity truck{ registry->create_entity() };
-	truck.add_component<TransformComponent>(glm::vec2(1000.0, 500.0), glm::vec2(2.0, 2.0), 0.0);
+	truck.add_component<TransformComponent>(glm::vec2(300.0, 200.0), glm::vec2(1.0, 1.0), 0.0);
 	truck.add_component<RigidBodyComponent>(glm::vec2(-20.0, -10.0));
 	truck.add_component<SpriteComponent>("truck_ford_right");
+}
+
+void Game::setup() {
+	load_level(0);
 }
 
 void Game::input() {
