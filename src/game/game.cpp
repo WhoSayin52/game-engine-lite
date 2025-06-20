@@ -90,12 +90,12 @@ void Game::load_level([[maybe_unused]] int level) {
 	Entity tank{ registry->create_entity() };
 	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-	tank.add_component<SpriteComponent>("tank_panther_right");
+	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 
 	Entity truck{ registry->create_entity() };
 	truck.add_component<TransformComponent>(glm::vec2(300.0, 200.0), glm::vec2(1.0, 1.0), 0.0);
 	truck.add_component<RigidBodyComponent>(glm::vec2(-20.0, -10.0));
-	truck.add_component<SpriteComponent>("truck_ford_right");
+	truck.add_component<SpriteComponent>("truck_ford_right", 1);
 }
 
 void Game::setup() {

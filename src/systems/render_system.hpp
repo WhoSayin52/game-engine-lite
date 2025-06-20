@@ -7,6 +7,9 @@
 
 #include <SDL2/SDL.h>
 
+#include <vector>
+#include <algorithm>
+
 class RenderSystem : public System {
 public:
 	RenderSystem();
@@ -20,16 +23,29 @@ RenderSystem::RenderSystem() {
 }
 
 void RenderSystem::update(SDL_Renderer* renderer, AssetManager* asset_manager) {
+
+	std::vector<Entity> renderable_entities{};
+
 	for (const Entity entity : get_entities()) {
+		if (entity.has_component<SpriteComponent>()) {
+			renderable_entities.push_back(entity);
+		}
+	}
+
+	std::sort(
+		renderable_entities.begin(),
+		renderable_entities.end(),
+		[](const Entity& e1, const Entity& e2) -> bool {
+			auto& e1_sprite{ e1.get_component<SpriteComponent>() };
+			auto& e2_sprite{ e2.get_component<SpriteComponent>() };
+
+			return e1_sprite.z_index < e2_sprite.z_index;
+		}
+	);
+
+	for (const Entity entity : renderable_entities) {
 		const TransformComponent& transform{ entity.get_component<TransformComponent>() };
 		const SpriteComponent& sprite{ entity.get_component<SpriteComponent>() };
-
-		const SDL_Rect src_rect{
-			sprite.src_x,
-			sprite.src_y,
-			sprite.width,
-			sprite.height
-		};
 
 		const SDL_Rect dest_rect{
 			static_cast<int>(transform.position.x),
@@ -41,7 +57,7 @@ void RenderSystem::update(SDL_Renderer* renderer, AssetManager* asset_manager) {
 		SDL_RenderCopyEx(
 			renderer,
 			asset_manager->get_texture(sprite.asset_id),
-			&src_rect,
+			&sprite.src_rect,
 			&dest_rect,
 			transform.rotation,
 			nullptr,

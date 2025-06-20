@@ -107,6 +107,7 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 
 			tile.add_component<SpriteComponent>(
 				asset_id,
+				0,
 				sprite_config::width,
 				sprite_config::height,
 				sprite_config::width * pos.x,

@@ -234,7 +234,7 @@ void Registry::remove_component(Entity entity) {
 
 template <typename TComponent>
 bool Registry::has_component(Entity entity) const {
-	const int component_id{ TComponent::get_id() };
+	const int component_id{ Component<TComponent>::get_id() };
 	const int entity_id{ entity.get_id() };
 
 	const std::size_t component_index{ static_cast<std::size_t>(component_id) };

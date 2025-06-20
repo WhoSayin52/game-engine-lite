@@ -29,8 +29,7 @@ void System::remove_entity(Entity entity) {
 
 const std::vector<Entity>& System::get_entities() const {
 	return entities;
-}	std::set<Entity> entities_to_add{};
-std::set<Entity> entities_to_kill{};
+}
 
 const Signature& System::get_component_signature() const {
 	return component_signature;
