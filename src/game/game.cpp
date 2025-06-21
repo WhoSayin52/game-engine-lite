@@ -3,8 +3,12 @@
 #include "../components/transform_component.hpp"
 #include "../components/rigidbody_component.hpp"
 #include "../components/sprite_component.hpp"
+#include "../components/animation_component.hpp"
+
+#include "../systems/animation_system.hpp"
 #include "../systems/movement_system.hpp"
 #include "../systems/render_system.hpp"
+
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 
@@ -80,21 +84,52 @@ void Game::run() {
 void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
+	registry->add_system<AnimationSystem>();
 
+	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper.png");
+	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
 	asset_manager->add_texture(renderer, "tank_panther_right", "../assets/images/tank-panther-right.png");
 	asset_manager->add_texture(renderer, "truck_ford_right", "../assets/images/truck-ford-right.png");
 
 	asset_manager->add_map(renderer, "jungle_map", "../assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png");
 	asset_manager->load_map(registry.get(), "jungle_map");
 
+	Entity chopper = registry->create_entity();
+	chopper.add_component<TransformComponent>(
+		glm::dvec2(10.0, 10.0),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	chopper.add_component<RigidBodyComponent>(glm::dvec2(0.0, 0.0));
+	chopper.add_component<SpriteComponent>("chopper", 1);
+	chopper.add_component<AnimationComponent>(2, 0.1, true);
+
+	Entity radar = registry->create_entity();
+	radar.add_component<TransformComponent>(
+		glm::dvec2(window_width - 74, 10),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	radar.add_component<SpriteComponent>("radar", 2, 64, 64);
+	radar.add_component<AnimationComponent>(8, 0.15, true);
+
+
 	Entity tank{ registry->create_entity() };
-	tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
-	tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+	tank.add_component<TransformComponent>(
+		glm::dvec2(10.0, 30.0),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	tank.add_component<RigidBodyComponent>(glm::dvec2(50.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 
 	Entity truck{ registry->create_entity() };
-	truck.add_component<TransformComponent>(glm::vec2(300.0, 200.0), glm::vec2(1.0, 1.0), 0.0);
-	truck.add_component<RigidBodyComponent>(glm::vec2(-20.0, -10.0));
+	truck.add_component<TransformComponent>(
+		glm::dvec2(300.0, 200.0),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	truck.add_component<RigidBodyComponent>(glm::dvec2(-20.0, -10.0));
 	truck.add_component<SpriteComponent>("truck_ford_right", 1);
 }
 
@@ -127,6 +162,7 @@ void Game::update() {
 	millisecs_prev_frame = SDL_GetTicks();
 
 	registry->get_system<MovementSystem>().update(delta_time);
+	registry->get_system<AnimationSystem>().update(delta_time);
 
 	registry->update();
 }
