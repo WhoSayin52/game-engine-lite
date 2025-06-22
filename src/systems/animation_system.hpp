@@ -21,7 +21,7 @@ AnimationSystem::AnimationSystem() {
 
 void AnimationSystem::update(double delta_time) {
 
-	for (Entity entity : get_entities()) {
+	for (const Entity& entity : get_entities()) {
 		SpriteComponent& sprite{ entity.get_component<SpriteComponent>() };
 		AnimationComponent& animation{ entity.get_component<AnimationComponent>() };
 

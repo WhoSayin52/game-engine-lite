@@ -20,7 +20,7 @@ RenderCollisionSystem::RenderCollisionSystem() {
 
 void RenderCollisionSystem::update(SDL_Renderer* renderer) {
 
-	for (Entity e : get_entities()) {
+	for (const Entity& e : get_entities()) {
 		const TransformComponent& transform{ e.get_component<TransformComponent>() };
 		const BoxColliderComponent& collider{ e.get_component<BoxColliderComponent>() };
 

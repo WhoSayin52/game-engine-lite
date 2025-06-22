@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <deque>
 #include <utility>
 #include <cstdint>
 #include <typeindex>
@@ -32,6 +33,7 @@ public:
 	Entity(int id, Registry* registry) : id{ id }, registry{ registry } {};
 	Entity& operator=(const Entity& other) = default;
 	int get_id() const;
+	void free();
 
 	template <typename TComponent, typename ...Args>
 	void add_component(Args&& ...args);
@@ -79,8 +81,8 @@ public:
 	System() = default;
 	~System() = default;
 
-	void add_entity(Entity entity);
-	void remove_entity(Entity entity);
+	void add_entity(const Entity& entity);
+	void remove_entity(const Entity& entity);
 	const std::vector<Entity>& get_entities() const;
 	const Signature& get_component_signature() const;
 
@@ -97,7 +99,7 @@ public:
 	virtual ~IPool() {}
 };
 
-template <typename T>
+template <typename TComponent>
 class Pool : public IPool {
 public:
 	Pool(std::size_t size = 100) : data(size) {}
@@ -107,14 +109,14 @@ public:
 	std::size_t size() const { return data.size(); }
 	void resize(std::size_t size) { data.resize(size); }
 	void clear() { data.clear(); }
-	void add(T object) { data.push_back(object); }
-	void set(std::size_t index, T object) { data[index] = object; }
-	T& get(std::size_t index) { return static_cast<T&>(data[index]); }
+	void add(TComponent object) { data.push_back(object); }
+	void set(std::size_t index, TComponent object) { data[index] = object; }
+	TComponent& get(std::size_t index) { return static_cast<TComponent&>(data[index]); }
 
-	T& operator[](std::size_t index) { return data[index]; }
+	TComponent& operator[](std::size_t index) { return data[index]; }
 
 private:
-	std::vector<T> data{};
+	std::vector<TComponent> data{};
 };
 
 class Registry {
@@ -122,23 +124,25 @@ public:
 	Registry() = default;
 
 	void update();
-	void add_entity_to_systems(Entity entity);
+	void add_entity_to_systems(const Entity& entity);
+	void remove_entity_from_systems(const Entity& entity);
 
 	// Entity managment
 	Entity create_entity();
+	void free_entity(Entity& entity);
 
 	// Component managment
 	template <typename TComponent, typename ...Args>
-	void add_component(Entity entity, Args&& ...args);
+	void add_component(const Entity& entity, Args&& ...args);
 
 	template <typename TComponent>
-	void remove_component(Entity entity);
+	void remove_component(const Entity& entity);
 
 	template <typename TComponent>
-	bool has_component(Entity entity) const;
+	bool has_component(const Entity& entity) const;
 
 	template <typename TComponent>
-	TComponent& get_component(Entity entity) const;
+	TComponent& get_component(const Entity& entity) const;
 
 	// System managment
 	template <typename TSystem, typename ...Args>
@@ -155,11 +159,12 @@ public:
 
 private:
 	int entity_count{};
+	std::deque<int> free_ids{};
 	std::vector<std::shared_ptr<IPool>> component_pools{};
 	std::vector<Signature> entity_component_signatures{};
-	std::unordered_map <std::type_index, std::shared_ptr<System>> systems{};
+	std::unordered_map<std::type_index, std::shared_ptr<System>> systems{};
 	std::set<Entity> entities_to_add{};
-	std::set<Entity> entities_to_kill{};
+	std::set<Entity> entities_to_free{};
 };
 
 template <typename TComponent, typename ...Args>
@@ -190,7 +195,7 @@ void System::require_component() {
 }
 
 template <typename TComponent, typename ...Args>
-void Registry::add_component(Entity entity, Args&& ...args) {
+void Registry::add_component(const Entity& entity, Args&& ...args) {
 	const int component_id{ Component<TComponent>::get_id() };
 	const int entity_id{ entity.get_id() };
 
@@ -220,7 +225,7 @@ void Registry::add_component(Entity entity, Args&& ...args) {
 }
 
 template <typename TComponent>
-void Registry::remove_component(Entity entity) {
+void Registry::remove_component(const Entity& entity) {
 	const int component_id{ Component<TComponent>::get_id() };
 	const int entity_id{ entity.get_id() };
 
@@ -233,7 +238,7 @@ void Registry::remove_component(Entity entity) {
 }
 
 template <typename TComponent>
-bool Registry::has_component(Entity entity) const {
+bool Registry::has_component(const Entity& entity) const {
 	const int component_id{ Component<TComponent>::get_id() };
 	const int entity_id{ entity.get_id() };
 
@@ -244,7 +249,7 @@ bool Registry::has_component(Entity entity) const {
 }
 
 template <typename TComponent>
-TComponent& Registry::get_component(Entity entity) const {
+TComponent& Registry::get_component(const Entity& entity) const {
 	const int component_id{ Component<TComponent>::get_id() };
 	const std::size_t component_index{ static_cast<std::size_t>(component_id) };
 

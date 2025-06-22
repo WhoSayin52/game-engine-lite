@@ -28,13 +28,13 @@ void CollisionSystem::update() {
 	auto& entities{ get_entities() };
 
 	for (auto i{ entities.begin() }; i != entities.end(); ++i) {
-		Entity e{ *i };
+		const Entity& e{ *i };
 
 		const TransformComponent& transform{ e.get_component<TransformComponent>() };
 		BoxColliderComponent& collider{ e.get_component<BoxColliderComponent>() };
 
 		for (auto j{ i + 1 }; j != entities.end(); ++j) {
-			Entity other{ *j };
+			const Entity& other{ *j };
 
 			const TransformComponent& other_transform{ other.get_component<TransformComponent>() };
 			BoxColliderComponent& other_collider{ other.get_component<BoxColliderComponent>() };

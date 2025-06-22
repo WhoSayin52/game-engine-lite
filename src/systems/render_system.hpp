@@ -26,7 +26,7 @@ void RenderSystem::update(SDL_Renderer* renderer, AssetManager* asset_manager) {
 
 	std::vector<Entity> renderable_entities{};
 
-	for (const Entity entity : get_entities()) {
+	for (const Entity& entity : get_entities()) {
 		if (entity.has_component<SpriteComponent>()) {
 			renderable_entities.push_back(entity);
 		}

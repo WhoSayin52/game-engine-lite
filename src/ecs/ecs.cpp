@@ -9,11 +9,15 @@ int Entity::get_id() const {
 	return id;
 }
 
-void System::add_entity(Entity entity) {
+void Entity::free() {
+	registry->free_entity(*this);
+}
+
+void System::add_entity(const Entity& entity) {
 	entities.push_back(entity);
 }
 
-void System::remove_entity(Entity entity) {
+void System::remove_entity(const Entity& entity) {
 
 	entities.erase(
 		std::remove_if(
@@ -36,13 +40,21 @@ const Signature& System::get_component_signature() const {
 }
 
 void Registry::update() {
-	for (Entity entity : entities_to_add) {
+	for (const Entity& entity : entities_to_add) {
 		add_entity_to_systems(entity);
 	}
 	entities_to_add.clear();
+
+	for (const Entity& entity : entities_to_free) {
+		remove_entity_from_systems(entity);
+		entity_component_signatures[static_cast<std::size_t>(entity.get_id())].reset();
+		free_ids.push_back(entity.get_id());
+		Logger::log("Registry: Entity destroyed, id: " + std::to_string(entity.get_id()));
+	}
+	entities_to_free.clear();
 }
 
-void Registry::add_entity_to_systems(Entity entity) {
+void Registry::add_entity_to_systems(const Entity& entity) {
 	const int entity_id{ entity.get_id() };
 	const Signature& entity_component_signature{ entity_component_signatures[static_cast<std::size_t>(entity_id)] };
 
@@ -56,8 +68,25 @@ void Registry::add_entity_to_systems(Entity entity) {
 	}
 }
 
+void Registry::remove_entity_from_systems(const Entity& entity) {
+	for (auto& pair : systems) {
+		System& system{ *pair.second };
+		system.remove_entity(entity);
+	}
+}
+
 Entity Registry::create_entity() {
-	Entity entity{ entity_count++, this };
+	int new_id{};
+
+	if (free_ids.empty()) {
+		new_id = entity_count++;
+	}
+	else {
+		new_id = free_ids.front();
+		free_ids.pop_front();
+	}
+
+	Entity entity{ new_id, this };
 
 	entities_to_add.insert(entity);
 
@@ -70,5 +99,9 @@ Entity Registry::create_entity() {
 	Logger::log("Registry: Entity created, id: " + std::to_string(entity.get_id()));
 
 	return entity;
+}
+
+void Registry::free_entity(Entity& entity) {
+	entities_to_free.insert(entity);
 }
 
