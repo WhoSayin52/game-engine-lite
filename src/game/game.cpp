@@ -1,12 +1,15 @@
 #include "game.hpp"
 
-#include "../components/transform_component.hpp"
-#include "../components/rigidbody_component.hpp"
-#include "../components/sprite_component.hpp"
 #include "../components/animation_component.hpp"
+#include "../components/box_collider_component.hpp"
+#include "../components/sprite_component.hpp"
+#include "../components/rigidbody_component.hpp"
+#include "../components/transform_component.hpp"
 
 #include "../systems/animation_system.hpp"
+#include "../systems/collision_system.hpp"
 #include "../systems/movement_system.hpp"
+#include "../systems/render_collision_system.hpp"
 #include "../systems/render_system.hpp"
 
 #include "../logger/logger.hpp"
@@ -82,9 +85,11 @@ void Game::run() {
 }
 
 void Game::load_level([[maybe_unused]] int level) {
+	registry->add_system<AnimationSystem>();
+	registry->add_system<CollisionSystem>();
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
-	registry->add_system<AnimationSystem>();
+	registry->add_system<RenderCollisionSystem>();
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper.png");
 	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
@@ -94,6 +99,17 @@ void Game::load_level([[maybe_unused]] int level) {
 	asset_manager->add_map(renderer, "jungle_map", "../assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png");
 	asset_manager->load_map(registry.get(), "jungle_map");
 
+	// Radar
+	Entity radar = registry->create_entity();
+	radar.add_component<TransformComponent>(
+		glm::dvec2(window_width - 74, 10),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	radar.add_component<SpriteComponent>("radar", 2, 64, 64);
+	radar.add_component<AnimationComponent>(8, 0.15, true);
+
+	// Chopper
 	Entity chopper = registry->create_entity();
 	chopper.add_component<TransformComponent>(
 		glm::dvec2(10.0, 10.0),
@@ -104,33 +120,27 @@ void Game::load_level([[maybe_unused]] int level) {
 	chopper.add_component<SpriteComponent>("chopper", 1);
 	chopper.add_component<AnimationComponent>(2, 0.1, true);
 
-	Entity radar = registry->create_entity();
-	radar.add_component<TransformComponent>(
-		glm::dvec2(window_width - 74, 10),
-		glm::dvec2(1.0, 1.0),
-		0.0
-	);
-	radar.add_component<SpriteComponent>("radar", 2, 64, 64);
-	radar.add_component<AnimationComponent>(8, 0.15, true);
-
-
+	// Tank
 	Entity tank{ registry->create_entity() };
 	tank.add_component<TransformComponent>(
-		glm::dvec2(10.0, 30.0),
+		glm::dvec2(100.0, 10.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	tank.add_component<RigidBodyComponent>(glm::dvec2(50.0, 0.0));
+	tank.add_component<RigidBodyComponent>(glm::dvec2(-10.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
+	tank.add_component<BoxColliderComponent>(32, 32);
 
+	// Truck
 	Entity truck{ registry->create_entity() };
 	truck.add_component<TransformComponent>(
-		glm::dvec2(300.0, 200.0),
+		glm::dvec2(10.0, 10.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	truck.add_component<RigidBodyComponent>(glm::dvec2(-20.0, -10.0));
+	truck.add_component<RigidBodyComponent>(glm::dvec2(10.0, 0.0));
 	truck.add_component<SpriteComponent>("truck_ford_right", 1);
+	truck.add_component<BoxColliderComponent>(32, 32);
 }
 
 void Game::setup() {
@@ -147,6 +157,8 @@ void Game::input() {
 
 		case SDL_KEYDOWN:
 			if (event.key.keysym.sym == SDLK_ESCAPE) is_running = false;
+			if (event.key.keysym.sym == SDLK_d) is_debugging = !is_debugging;
+
 			break;
 		}
 	}
@@ -161,8 +173,9 @@ void Game::update() {
 
 	millisecs_prev_frame = SDL_GetTicks();
 
-	registry->get_system<MovementSystem>().update(delta_time);
 	registry->get_system<AnimationSystem>().update(delta_time);
+	registry->get_system<CollisionSystem>().update();
+	registry->get_system<MovementSystem>().update(delta_time);
 
 	registry->update();
 }
@@ -172,6 +185,10 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	registry->get_system<RenderSystem>().update(renderer, &(*asset_manager));
+
+	if (is_debugging) {
+		registry->get_system<RenderCollisionSystem>().update(renderer);
+	}
 
 	SDL_RenderPresent(renderer);
 }

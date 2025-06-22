@@ -12,10 +12,10 @@ struct AnimationComponent {
 		int frames = 1,
 		double frame_delay = 0.0,
 		bool loop = true
-	)
-		: frames{ frames }, current_frame{ 0 },
+	) :
+		frames{ frames },
 		frame_delay{ frame_delay },
-		elapsed_seconds{ 0.0 }, loop{ loop } {
+		loop{ loop } {
 	}
 };
 

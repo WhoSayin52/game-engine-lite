@@ -31,8 +31,8 @@ struct SpriteComponent {
 		int height = sprite_config::height,
 		int src_x = sprite_config::src_x,
 		int src_y = sprite_config::src_y
-	)
-		: asset_id{ asset_id }, z_index{ z_index },
+	) :
+		asset_id{ asset_id }, z_index{ z_index },
 		width{ width }, height{ height },
 		src_rect{ src_x, src_y, width, height }
 	{

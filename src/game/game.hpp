@@ -34,6 +34,7 @@ public:
 
 private:
 	bool is_running{};
+	bool is_debugging{};
 	Uint32 millisecs_prev_frame{ 0 };
 	SDL_Window* window{ nullptr };
 	SDL_Renderer* renderer{ nullptr };
