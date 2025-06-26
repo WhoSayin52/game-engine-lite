@@ -22,7 +22,7 @@ private:
 
 template <typename TOwner, typename TEvent>
 class EventCallback : public IEventCallback {
-private:
+
 	using CallbackFunction = void (TOwner::*)(TEvent&);
 
 public:
@@ -35,6 +35,9 @@ public:
 	}
 
 	~EventCallback() final override = default;
+
+	EventCallback(const EventCallback&) = delete;
+	EventCallback& operator=(const EventCallback&) = delete;
 
 private:
 	TOwner* owner_instance{};
@@ -50,6 +53,8 @@ public:
 	EventManager();
 	~EventManager();
 
+	void reset() { listeners.clear(); }
+
 	template <typename TOwner, typename TEvent>
 	void listen(TOwner* owner_instance, void (TOwner::* callback_function)(TEvent&));
 
@@ -62,6 +67,7 @@ private:
 
 template <typename TOwner, typename TEvent>
 void EventManager::listen(TOwner* owner_instance, void (TOwner::* callback_function)(TEvent&)) {
+
 	if (!listeners[typeid(TEvent)]) {
 		listeners[typeid(TEvent)] = std::make_unique<EventHandlerList>();
 	}

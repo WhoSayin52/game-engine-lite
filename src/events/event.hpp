@@ -7,4 +7,6 @@ public:
 	virtual ~Event() = 0;
 };
 
+inline Event::~Event() {}
+
 #endif //EVENT

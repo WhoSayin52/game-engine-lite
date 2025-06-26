@@ -13,7 +13,7 @@ public:
 	}
 
 	void update(double delta_time) {
-		for (const Entity& entity : get_entities()) {
+		for (Entity& entity : get_entities()) {
 			TransformComponent& transform{ entity.get_component<TransformComponent>() };
 			RigidBodyComponent& rigidbody{ entity.get_component<RigidBodyComponent>() };
 

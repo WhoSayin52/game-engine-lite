@@ -31,7 +31,7 @@ void System::remove_entity(const Entity& entity) {
 	);
 }
 
-const std::vector<Entity>& System::get_entities() const {
+std::vector<Entity>& System::get_entities() {
 	return entities;
 }
 

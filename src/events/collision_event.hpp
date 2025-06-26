@@ -4,7 +4,7 @@
 #include "event.hpp"
 #include "../ecs/ecs.hpp"
 
-class CollisionEvent : Event {
+class CollisionEvent : public Event {
 public:
 	Entity& a;
 	Entity& b;

@@ -83,7 +83,7 @@ public:
 
 	void add_entity(const Entity& entity);
 	void remove_entity(const Entity& entity);
-	const std::vector<Entity>& get_entities() const;
+	std::vector<Entity>& get_entities();
 	const Signature& get_component_signature() const;
 
 	template <typename TComponent>

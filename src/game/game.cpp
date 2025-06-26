@@ -8,6 +8,8 @@
 
 #include "../systems/animation_system.hpp"
 #include "../systems/collision_system.hpp"
+#include "../systems/damage_system.hpp"
+#include "../systems/keyboard_movement_system.hpp"
 #include "../systems/movement_system.hpp"
 #include "../systems/render_collision_system.hpp"
 #include "../systems/render_system.hpp"
@@ -88,9 +90,11 @@ void Game::run() {
 void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<AnimationSystem>();
 	registry->add_system<CollisionSystem>();
+	registry->add_system<DamageSystem>();
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
 	registry->add_system<RenderCollisionSystem>();
+	registry->add_system<KeyboardMovementSystem>();
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper.png");
 	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
@@ -160,6 +164,8 @@ void Game::input() {
 			if (event.key.keysym.sym == SDLK_ESCAPE) is_running = false;
 			if (event.key.keysym.sym == SDLK_d) is_debugging = !is_debugging;
 
+			event_manager->emit<KeyPressedEvent>(event.key.keysym.sym);
+
 			break;
 		}
 	}
@@ -174,8 +180,14 @@ void Game::update() {
 
 	millisecs_prev_frame = SDL_GetTicks();
 
+	event_manager->reset();
+
+	registry->get_system<DamageSystem>().listen_to_event(*event_manager);
+	registry->get_system<KeyboardMovementSystem>().listen_to_event(*event_manager);
+
 	registry->get_system<AnimationSystem>().update(delta_time);
-	registry->get_system<CollisionSystem>().update();
+	registry->get_system<CollisionSystem>().update(*event_manager);
+	registry->get_system<DamageSystem>().update();
 	registry->get_system<MovementSystem>().update(delta_time);
 
 	registry->update();
@@ -185,7 +197,7 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-	registry->get_system<RenderSystem>().update(renderer, &(*asset_manager));
+	registry->get_system<RenderSystem>().update(renderer, *asset_manager);
 
 	if (is_debugging) {
 		registry->get_system<RenderCollisionSystem>().update(renderer);

@@ -17,7 +17,7 @@ public:
 		require_component<SpriteComponent>();
 	}
 
-	void update(SDL_Renderer* renderer, AssetManager* asset_manager) {
+	void update(SDL_Renderer* renderer, AssetManager& asset_manager) {
 
 		std::vector<Entity> renderable_entities{};
 
@@ -51,7 +51,7 @@ public:
 
 			SDL_RenderCopyEx(
 				renderer,
-				asset_manager->get_texture(sprite.asset_id),
+				asset_manager.get_texture(sprite.asset_id),
 				&sprite.src_rect,
 				&dest_rect,
 				transform.rotation,

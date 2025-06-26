@@ -4,6 +4,8 @@
 #include "../ecs/ecs.hpp"
 #include "../components/box_collider_component.hpp"
 #include "../components/transform_component.hpp"
+#include "../event_manager/event_manager.hpp"
+#include "../events/collision_event.hpp"
 
 class CollisionSystem : public System {
 public:
@@ -12,17 +14,17 @@ public:
 		require_component<TransformComponent>();
 	}
 
-	void update() {
+	void update(EventManager& event_manager) {
 		auto& entities{ get_entities() };
 
 		for (auto i{ entities.begin() }; i != entities.end(); ++i) {
-			const Entity& e{ *i };
+			Entity& e{ *i };
 
 			const TransformComponent& transform{ e.get_component<TransformComponent>() };
 			BoxColliderComponent& collider{ e.get_component<BoxColliderComponent>() };
 
 			for (auto j{ i + 1 }; j != entities.end(); ++j) {
-				const Entity& other{ *j };
+				Entity& other{ *j };
 
 				const TransformComponent& other_transform{ other.get_component<TransformComponent>() };
 				BoxColliderComponent& other_collider{ other.get_component<BoxColliderComponent>() };
@@ -30,6 +32,8 @@ public:
 				bool is_colliding{ check_collision(transform, collider, other_transform, other_collider) };
 
 				if (is_colliding) {
+					event_manager.emit<CollisionEvent>(e, other);
+
 					collider.is_colliding = true;
 					other_collider.is_colliding = true;
 				}
