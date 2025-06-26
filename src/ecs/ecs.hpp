@@ -96,7 +96,7 @@ private:
 
 class IPool {
 public:
-	virtual ~IPool() {}
+	virtual ~IPool() = 0;
 };
 
 template <typename TComponent>
@@ -129,7 +129,7 @@ public:
 
 	// Entity managment
 	Entity create_entity();
-	void free_entity(Entity& entity);
+	void free_entity(const Entity& entity);
 
 	// Component managment
 	template <typename TComponent, typename ...Args>

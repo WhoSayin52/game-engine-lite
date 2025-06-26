@@ -39,6 +39,8 @@ const Signature& System::get_component_signature() const {
 	return component_signature;
 }
 
+IPool::~IPool() {}
+
 void Registry::update() {
 	for (const Entity& entity : entities_to_add) {
 		add_entity_to_systems(entity);
@@ -101,7 +103,7 @@ Entity Registry::create_entity() {
 	return entity;
 }
 
-void Registry::free_entity(Entity& entity) {
+void Registry::free_entity(const Entity& entity) {
 	entities_to_free.insert(entity);
 }
 

@@ -1,8 +1,9 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "../ecs/ecs.hpp"
 #include "../asset_manager/asset_manager.hpp"
+#include "../ecs/ecs.hpp"
+#include "../event_manager/event_manager.hpp"
 
 #include <SDL2/SDL_stdinc.h>
 
@@ -40,6 +41,7 @@ private:
 	SDL_Renderer* renderer{ nullptr };
 	std::unique_ptr<Registry> registry{ nullptr };
 	std::unique_ptr<AssetManager> asset_manager{ nullptr };
+	std::unique_ptr<EventManager> event_manager{ nullptr };
 };
 
 #endif //GAME_HPP

@@ -61,6 +61,7 @@
 		"span": "cpp",
 		"set": "cpp",
 		"typeindex": "cpp",
-		"fstream": "cpp"
+		"fstream": "cpp",
+		"unordered_set": "cpp"
 	}
 }

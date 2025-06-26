@@ -26,6 +26,7 @@ Game::Game()
 	is_running = false;
 	registry = std::make_unique<Registry>();
 	asset_manager = std::make_unique<AssetManager>();
+	event_manager = std::make_unique<EventManager>();
 	Logger::log("Game constructor called!");
 }
 
