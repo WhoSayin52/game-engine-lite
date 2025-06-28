@@ -1,6 +1,7 @@
 #ifndef RENDER_COLLISION_SYSTEM_HPP
 #define RENDER_COLLISION_SYSTEM_HPP
 
+#include "../game/game.hpp"
 #include "../ecs/ecs.hpp"
 #include "../components/transform_component.hpp"
 #include "../components/box_collider_component.hpp"
@@ -14,15 +15,16 @@ public:
 		require_component<BoxColliderComponent>();
 	}
 
-	void update(SDL_Renderer* renderer) {
+	void update(SDL_Renderer* renderer, SDL_Rect* camera) {
 
 		for (const Entity& e : get_entities()) {
 			const TransformComponent& transform{ e.get_component<TransformComponent>() };
 			const BoxColliderComponent& collider{ e.get_component<BoxColliderComponent>() };
 
 			SDL_Rect collider_rect{
-				static_cast<int>(transform.position.x + collider.offset.x),
-				static_cast<int>(transform.position.y + collider.offset.y),
+				static_cast<int>(transform.position.x + collider.offset.x) - camera->x,
+				static_cast<int>(transform.position.y + collider.offset.y) -
+				camera->y,
 				collider.width,
 				collider.height
 			};

@@ -1,5 +1,5 @@
-#ifndef CAMERA_FOLLOW_SYSTEM_HPP
-#define CAMERA_FOLLOW_SYSTEM_HPP
+#ifndef CAMERA_MOVEMENT_SYSTEM_HPP
+#define CAMERA_MOVEMENT_SYSTEM_HPP
 
 #include "../game/game.hpp"
 #include "../ecs/ecs.hpp"
@@ -10,9 +10,9 @@
 
 #include <iostream>
 
-class CameraFollowSystem : public System {
+class CameraMovementSystem : public System {
 public:
-	CameraFollowSystem() {
+	CameraMovementSystem() {
 		require_component<CameraComponent>();
 		require_component<TransformComponent>();
 	}
@@ -50,4 +50,4 @@ public:
 	}
 };
 
-#endif //CAMERA_FOLLOW_SYSTEM_HPP
+#endif //CAMERA_MOVEMENT_SYSTEM_HPP

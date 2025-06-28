@@ -20,8 +20,8 @@ public:
 	void on_collision(CollisionEvent& event) {
 		Logger::log("DMG " + std::to_string(event.a.get_id()) + " and " + std::to_string(event.b.get_id()));
 
-		event.a.free();
-		event.b.free();
+		//event.a.free();
+		//event.b.free();
 	}
 
 	void update() {}

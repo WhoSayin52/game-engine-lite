@@ -5,6 +5,9 @@
 #include "../components/transform_component.hpp"
 #include "../components/sprite_component.hpp"
 
+#include "../components/rigidbody_component.hpp"
+#include <iostream>
+
 #include <SDL2/SDL.h>
 
 #include <vector>
@@ -22,9 +25,7 @@ public:
 		std::vector<Entity> renderable_entities{};
 
 		for (const Entity& entity : get_entities()) {
-			if (entity.has_component<SpriteComponent>()) {
-				renderable_entities.push_back(entity);
-			}
+			renderable_entities.push_back(entity);
 		}
 
 		std::sort(

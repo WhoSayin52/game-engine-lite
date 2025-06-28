@@ -4,16 +4,18 @@
 #include "../components/box_collider_component.hpp"
 #include "../components/camera_component.hpp"
 #include "../components/keyboard_control_component.hpp"
-#include "../components/sprite_component.hpp"
+#include "../components/projectile_emitter_component.hpp"
 #include "../components/rigidbody_component.hpp"
+#include "../components/sprite_component.hpp"
 #include "../components/transform_component.hpp"
 
 #include "../systems/animation_system.hpp"
-#include "../systems/camera_follow_system.hpp"
+#include "../systems/camera_movement_system.hpp"
 #include "../systems/collision_system.hpp"
 #include "../systems/damage_system.hpp"
 #include "../systems/keyboard_control_system.hpp"
 #include "../systems/movement_system.hpp"
+#include "../systems/projectile_emit_system.hpp"
 #include "../systems/render_collision_system.hpp"
 #include "../systems/render_system.hpp"
 
@@ -105,18 +107,20 @@ void Game::run() {
 
 void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<AnimationSystem>();
-	registry->add_system<CameraFollowSystem>();
+	registry->add_system<CameraMovementSystem>();
 	registry->add_system<CollisionSystem>();
 	registry->add_system<DamageSystem>();
+	registry->add_system<KeyboarControlSystem>();
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
 	registry->add_system<RenderCollisionSystem>();
-	registry->add_system<KeyboarControlSystem>();
+	registry->add_system<ProjectileEmitSystem>();
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper-spritesheet.png");
 	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
 	asset_manager->add_texture(renderer, "tank_panther_right", "../assets/images/tank-panther-right.png");
 	asset_manager->add_texture(renderer, "truck_ford_right", "../assets/images/truck-ford-right.png");
+	asset_manager->add_texture(renderer, "bullet", "../assets/images/bullet.png");
 
 	asset_manager->add_map(renderer, "jungle_map", "../assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png");
 	asset_manager->load_map(registry.get(), "jungle_map");
@@ -152,13 +156,14 @@ void Game::load_level([[maybe_unused]] int level) {
 	// Tank
 	Entity tank{ registry->create_entity() };
 	tank.add_component<TransformComponent>(
-		glm::dvec2(100.0, 10.0),
+		glm::dvec2(300.0, 10.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	tank.add_component<RigidbodyComponent>(glm::dvec2(-10.0, 0.0));
+	tank.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 	tank.add_component<BoxColliderComponent>(32, 32);
+	tank.add_component<ProjectileEmitterComponent>(glm::dvec2{ -50.0, 0 });
 
 	// Truck
 	Entity truck{ registry->create_entity() };
@@ -167,9 +172,10 @@ void Game::load_level([[maybe_unused]] int level) {
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	truck.add_component<RigidbodyComponent>(glm::dvec2(10.0, 0.0));
+	truck.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	truck.add_component<SpriteComponent>("truck_ford_right", 1);
 	truck.add_component<BoxColliderComponent>(32, 32);
+	truck.add_component<ProjectileEmitterComponent>(glm::dvec2{ 50.0, 0 });
 }
 
 void Game::setup() {
@@ -210,10 +216,10 @@ void Game::update() {
 	registry->get_system<KeyboarControlSystem>().listen_to_event(*event_manager);
 
 	registry->get_system<AnimationSystem>().update(delta_time);
+	registry->get_system<CameraMovementSystem>().update(&camera);
 	registry->get_system<CollisionSystem>().update(*event_manager);
-	registry->get_system<DamageSystem>().update();
 	registry->get_system<MovementSystem>().update(delta_time);
-	registry->get_system<CameraFollowSystem>().update(&camera);
+	registry->get_system<ProjectileEmitSystem>().update(*registry, delta_time);
 
 	registry->update();
 }
@@ -225,7 +231,7 @@ void Game::render() {
 	registry->get_system<RenderSystem>().update(renderer, *asset_manager, &camera);
 
 	if (is_debugging) {
-		registry->get_system<RenderCollisionSystem>().update(renderer);
+		registry->get_system<RenderCollisionSystem>().update(renderer, &camera);
 	}
 
 	SDL_RenderPresent(renderer);
