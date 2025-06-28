@@ -9,13 +9,13 @@ class MovementSystem : public System {
 public:
 	MovementSystem() {
 		require_component<TransformComponent>();
-		require_component<RigidBodyComponent>();
+		require_component<RigidbodyComponent>();
 	}
 
 	void update(double delta_time) {
 		for (Entity& entity : get_entities()) {
 			TransformComponent& transform{ entity.get_component<TransformComponent>() };
-			RigidBodyComponent& rigidbody{ entity.get_component<RigidBodyComponent>() };
+			RigidbodyComponent& rigidbody{ entity.get_component<RigidbodyComponent>() };
 
 			transform.position.x += rigidbody.velocity.x * delta_time;
 			transform.position.y += rigidbody.velocity.y * delta_time;

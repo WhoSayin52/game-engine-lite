@@ -3,10 +3,10 @@
 
 #include <glm/glm.hpp>
 
-struct RigidBodyComponent {
+struct RigidbodyComponent {
 	glm::dvec2 velocity{};
 
-	RigidBodyComponent(glm::dvec2 velocity = glm::dvec2(0.0, 0.0))
+	RigidbodyComponent(glm::dvec2 velocity = glm::dvec2(0.0, 0.0))
 		: velocity{ velocity } {
 	}
 };

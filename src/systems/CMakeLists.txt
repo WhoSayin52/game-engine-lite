@@ -1,7 +1,7 @@
 target_sources(${EXE} PRIVATE animation_system.hpp)
 target_sources(${EXE} PRIVATE collision_system.hpp)
 target_sources(${EXE} PRIVATE damage_system.hpp)
-target_sources(${EXE} PRIVATE keyboard_movement_system.hpp) 
+target_sources(${EXE} PRIVATE keyboard_control_system.hpp) 
 target_sources(${EXE} PRIVATE movement_system.hpp)
 target_sources(${EXE} PRIVATE render_collision_system.hpp)
 target_sources(${EXE} PRIVATE render_system.hpp)
