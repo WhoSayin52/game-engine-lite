@@ -15,6 +15,7 @@ namespace sprite_config {
 struct SpriteComponent {
 	std::string asset_id{};
 	int z_index{};
+	bool is_fixed{};
 	int width{ sprite_config::width };
 	int height{ sprite_config::height };
 	SDL_Rect src_rect{
@@ -27,13 +28,14 @@ struct SpriteComponent {
 	SpriteComponent(
 		const std::string& asset_id = "",
 		int z_index = 0,
+		bool is_fixed = false,
 		int width = sprite_config::width,
 		int height = sprite_config::height,
 		int src_x = sprite_config::src_x,
 		int src_y = sprite_config::src_y
 	) :
 		asset_id{ asset_id }, z_index{ z_index },
-		width{ width }, height{ height },
+		is_fixed{ is_fixed }, width{ width }, height{ height },
 		src_rect{ src_x, src_y, width, height }
 	{
 	}

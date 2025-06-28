@@ -124,11 +124,11 @@ void Game::load_level([[maybe_unused]] int level) {
 	// Radar
 	Entity radar = registry->create_entity();
 	radar.add_component<TransformComponent>(
-		glm::dvec2(window_width - 74, 10),
+		glm::dvec2(camera.w - 74, 10),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	radar.add_component<SpriteComponent>("radar", 2, 64, 64);
+	radar.add_component<SpriteComponent>("radar", 2, true, 64, 64);
 	radar.add_component<AnimationComponent>(8, 0.15, true);
 
 	// Chopper
