@@ -117,6 +117,6 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 		}
 	}
 
-	Game::map_width = static_cast<int>(map.back().size() * tile_scale) * sprite_config::height;
-	Game::map_height = static_cast<int>(map.size() * tile_scale) * sprite_config::width;
+	Game::map_width = static_cast<int>(map.back().size()) * static_cast<int>(tile_scale) * sprite_config::height;
+	Game::map_height = static_cast<int>(map.size()) * static_cast<int>(tile_scale) * sprite_config::width;
 }
