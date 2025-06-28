@@ -1,4 +1,5 @@
 target_sources(${EXE} PRIVATE animation_system.hpp)
+target_sources(${EXE} PRIVATE camera_follow_system.hpp)
 target_sources(${EXE} PRIVATE collision_system.hpp)
 target_sources(${EXE} PRIVATE damage_system.hpp)
 target_sources(${EXE} PRIVATE keyboard_control_system.hpp) 

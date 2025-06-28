@@ -5,7 +5,7 @@
 #include "../ecs/ecs.hpp"
 #include "../event_manager/event_manager.hpp"
 
-#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL.h>
 
 #include <memory>
 
@@ -17,6 +17,11 @@ constexpr int MILLISECONDS_PRE_FRAME{ 1000 / FPS };
 
 class Game {
 public:
+	static int window_width;
+	static int window_height;
+	static int map_width;
+	static int map_height;
+
 	Game();
 	~Game();
 	Game(const Game&) = delete;
@@ -30,15 +35,14 @@ public:
 	void render();
 	void destroy();
 
-	int window_width{ 800 };
-	int window_height{ 632 };
-
 private:
 	bool is_running{};
 	bool is_debugging{};
 	Uint32 millisecs_prev_frame{ 0 };
 	SDL_Window* window{ nullptr };
 	SDL_Renderer* renderer{ nullptr };
+	SDL_Rect camera{};
+
 	std::unique_ptr<Registry> registry{ nullptr };
 	std::unique_ptr<AssetManager> asset_manager{ nullptr };
 	std::unique_ptr<EventManager> event_manager{ nullptr };

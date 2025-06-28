@@ -1,5 +1,6 @@
 #include "asset_manager.hpp"
 
+#include "../game/game.hpp"
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 #include "../components/transform_component.hpp"
@@ -115,4 +116,7 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 			);
 		}
 	}
+
+	Game::map_width = static_cast<int>(map.back().size() * tile_scale) * sprite_config::height;
+	Game::map_height = static_cast<int>(map.size() * tile_scale) * sprite_config::width;
 }

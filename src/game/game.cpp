@@ -2,12 +2,14 @@
 
 #include "../components/animation_component.hpp"
 #include "../components/box_collider_component.hpp"
+#include "../components/camera_component.hpp"
 #include "../components/keyboard_control_component.hpp"
 #include "../components/sprite_component.hpp"
 #include "../components/rigidbody_component.hpp"
 #include "../components/transform_component.hpp"
 
 #include "../systems/animation_system.hpp"
+#include "../systems/camera_follow_system.hpp"
 #include "../systems/collision_system.hpp"
 #include "../systems/damage_system.hpp"
 #include "../systems/keyboard_control_system.hpp"
@@ -19,10 +21,14 @@
 #include "../ecs/ecs.hpp"
 
 #include <glm/glm.hpp>
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
 #include <cstdio>
+
+int Game::window_width{};
+int Game::window_height{};
+int Game::map_width{};
+int Game::map_height{};
 
 Game::Game()
 {
@@ -48,6 +54,9 @@ void Game::init() {
 	//SDL_GetCurrentDisplayMode(0, &display_mode);
 	//window_width = display_mode.w;
 	//window_height = display_mode.h;
+	window_width = 1152;
+	window_height = 864;
+
 	window = SDL_CreateWindow(
 		nullptr,
 		SDL_WINDOWPOS_CENTERED,
@@ -75,6 +84,12 @@ void Game::init() {
 		return;
 	}
 	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	SDL_RenderSetScale(renderer, 2.0f, 2.0f);
+
+	camera.x = 0;
+	camera.y = 0;
+	camera.w = window_width / 2;
+	camera.h = window_height / 2;
 
 	is_running = true;
 }
@@ -90,6 +105,7 @@ void Game::run() {
 
 void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<AnimationSystem>();
+	registry->add_system<CameraFollowSystem>();
 	registry->add_system<CollisionSystem>();
 	registry->add_system<DamageSystem>();
 	registry->add_system<MovementSystem>();
@@ -125,11 +141,12 @@ void Game::load_level([[maybe_unused]] int level) {
 	chopper.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	chopper.add_component<SpriteComponent>("chopper", 1);
 	chopper.add_component<AnimationComponent>(2, 0.1, true);
+	chopper.add_component<CameraComponent>();
 	chopper.add_component<KeyboardControlComponent>(
-		glm::dvec2(0.0, -20.0),
-		glm::dvec2(20.0, 0.0),
-		glm::dvec2(0.0, 20.0),
-		glm::dvec2(-20.0, 0.0)
+		glm::dvec2(0.0, -80.0),
+		glm::dvec2(80.0, 0.0),
+		glm::dvec2(0.0, 80.0),
+		glm::dvec2(-80.0, 0.0)
 	);
 
 	// Tank
@@ -196,6 +213,7 @@ void Game::update() {
 	registry->get_system<CollisionSystem>().update(*event_manager);
 	registry->get_system<DamageSystem>().update();
 	registry->get_system<MovementSystem>().update(delta_time);
+	registry->get_system<CameraFollowSystem>().update(&camera);
 
 	registry->update();
 }
@@ -204,7 +222,7 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-	registry->get_system<RenderSystem>().update(renderer, *asset_manager);
+	registry->get_system<RenderSystem>().update(renderer, *asset_manager, &camera);
 
 	if (is_debugging) {
 		registry->get_system<RenderCollisionSystem>().update(renderer);
