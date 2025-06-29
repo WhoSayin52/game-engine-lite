@@ -6,7 +6,6 @@
 #include "../components/sprite_component.hpp"
 
 #include "../components/rigidbody_component.hpp"
-#include <iostream>
 
 #include <SDL2/SDL.h>
 

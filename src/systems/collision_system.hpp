@@ -7,6 +7,8 @@
 #include "../event_manager/event_manager.hpp"
 #include "../events/collision_event.hpp"
 
+#include <unordered_set>
+
 class CollisionSystem : public System {
 public:
 	CollisionSystem() {
@@ -15,6 +17,9 @@ public:
 	}
 
 	void update(EventManager& event_manager) {
+
+		std::unordered_set<int> colliding_entities{};
+
 		auto& entities{ get_entities() };
 
 		for (auto i{ entities.begin() }; i != entities.end(); ++i) {
@@ -34,13 +39,16 @@ public:
 				if (is_colliding) {
 					event_manager.emit<CollisionEvent>(e, other);
 
-					collider.is_colliding = true;
-					other_collider.is_colliding = true;
+					colliding_entities.insert(e.get_id());
+					colliding_entities.insert(other.get_id());
 				}
-				else {
-					collider.is_colliding = false;
-					other_collider.is_colliding = false;
-				}
+			}
+
+			if (colliding_entities.contains(e.get_id())) {
+				collider.is_colliding = true;
+			}
+			else {
+				collider.is_colliding = false;
 			}
 		}
 	}

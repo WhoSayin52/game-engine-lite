@@ -25,8 +25,6 @@
 #include <glm/glm.hpp>
 #include <SDL2/SDL_image.h>
 
-#include <cstdio>
-
 int Game::window_width{};
 int Game::window_height{};
 int Game::map_width{};

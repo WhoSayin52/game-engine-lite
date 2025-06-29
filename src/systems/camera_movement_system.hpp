@@ -8,8 +8,6 @@
 
 #include <SDL2/SDL.h>
 
-#include <iostream>
-
 class CameraMovementSystem : public System {
 public:
 	CameraMovementSystem() {
