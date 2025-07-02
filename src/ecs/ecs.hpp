@@ -30,6 +30,7 @@ class Registry;
 
 class Entity {
 public:
+
 	Entity(int id, Registry* registry) : id{ id }, registry{ registry } {};
 	Entity& operator=(const Entity& other) = default;
 	int get_id() const;
@@ -54,6 +55,8 @@ public:
 
 private:
 	int id{};
+
+public:
 	Registry* registry{ nullptr };
 };
 

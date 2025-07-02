@@ -3,7 +3,9 @@
 #include "../components/animation_component.hpp"
 #include "../components/box_collider_component.hpp"
 #include "../components/camera_component.hpp"
+#include "../components/health_component.hpp"
 #include "../components/keyboard_control_component.hpp"
+#include "../components/projectile_component.hpp"
 #include "../components/projectile_emitter_component.hpp"
 #include "../components/rigidbody_component.hpp"
 #include "../components/sprite_component.hpp"
@@ -15,6 +17,7 @@
 #include "../systems/damage_system.hpp"
 #include "../systems/keyboard_control_system.hpp"
 #include "../systems/movement_system.hpp"
+#include "../systems/projectile_duration_system.hpp"
 #include "../systems/projectile_emit_system.hpp"
 #include "../systems/render_collision_system.hpp"
 #include "../systems/render_system.hpp"
@@ -112,6 +115,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
 	registry->add_system<RenderCollisionSystem>();
+	registry->add_system<ProjectileDurationSystem>();
 	registry->add_system<ProjectileEmitSystem>();
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper-spritesheet.png");
@@ -150,6 +154,14 @@ void Game::load_level([[maybe_unused]] int level) {
 		glm::dvec2(0.0, 80.0),
 		glm::dvec2(-80.0, 0.0)
 	);
+	chopper.add_component<HealthComponent>(100);
+	chopper.add_component<ProjectileEmitterComponent>(
+		glm::dvec2{ 150.0, 150.0 },
+		10,
+		0.0,
+		10.0,
+		true
+	);
 
 	// Tank
 	Entity tank{ registry->create_entity() };
@@ -161,7 +173,13 @@ void Game::load_level([[maybe_unused]] int level) {
 	tank.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 	tank.add_component<BoxColliderComponent>(32, 32);
-	tank.add_component<ProjectileEmitterComponent>(glm::dvec2{ -50.0, 0 });
+	tank.add_component<ProjectileEmitterComponent>(
+		glm::dvec2{ 50.0, 0 },
+		10,
+		2.0,
+		5.0
+	);
+	tank.add_component<HealthComponent>(100);
 
 	// Truck
 	Entity truck{ registry->create_entity() };
@@ -173,7 +191,13 @@ void Game::load_level([[maybe_unused]] int level) {
 	truck.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	truck.add_component<SpriteComponent>("truck_ford_right", 1);
 	truck.add_component<BoxColliderComponent>(32, 32);
-	truck.add_component<ProjectileEmitterComponent>(glm::dvec2{ 50.0, 0 });
+	truck.add_component<ProjectileEmitterComponent>(
+		glm::dvec2{ 50.0, 0 },
+		10,
+		2.0,
+		5.0
+	);
+	truck.add_component<HealthComponent>(100);
 }
 
 void Game::setup() {
@@ -217,6 +241,7 @@ void Game::update() {
 	registry->get_system<CameraMovementSystem>().update(&camera);
 	registry->get_system<CollisionSystem>().update(*event_manager);
 	registry->get_system<MovementSystem>().update(delta_time);
+	registry->get_system<ProjectileDurationSystem>().update(delta_time);
 	registry->get_system<ProjectileEmitSystem>().update(*registry, delta_time);
 
 	registry->update();

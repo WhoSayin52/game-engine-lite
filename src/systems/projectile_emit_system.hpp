@@ -7,6 +7,8 @@
 #include "../components/rigidbody_component.hpp"
 #include "../components/sprite_component.hpp"
 #include "../components/box_collider_component.hpp"
+#include "../components/projectile_component.hpp"
+#include "../components/keyboard_control_component.hpp"
 
 class Registry;
 
@@ -17,9 +19,16 @@ public:
 		require_component<TransformComponent>();
 	}
 
+
+
 	void update(Registry& registry, double delta_time) {
 
 		for (Entity& entity : get_entities()) {
+
+			if (entity.has_component<KeyboardControlComponent>()) {
+				continue;
+			}
+
 			auto& emitter{ entity.get_component<ProjectileEmitterComponent>() };
 			auto& transform{ entity.get_component<TransformComponent>() };
 
@@ -41,6 +50,11 @@ public:
 				projectile.add_component<RigidbodyComponent>(emitter.velocity);
 				projectile.add_component<SpriteComponent>("bullet", 3, false, 4, 4);
 				projectile.add_component<BoxColliderComponent>(4, 4);
+				projectile.add_component<ProjectileComponent>(
+					emitter.damage,
+					emitter.duration,
+					emitter.is_friendly
+				);
 			}
 		}
 	}
