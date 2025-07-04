@@ -36,6 +36,9 @@ public:
 	int get_id() const;
 	void free();
 
+	void add_tag(std::string s);
+	void add_group(std::string s);
+
 	template <typename TComponent, typename ...Args>
 	void add_component(Args&& ...args);
 
@@ -133,6 +136,8 @@ public:
 	// Entity managment
 	Entity create_entity();
 	void free_entity(const Entity& entity);
+	void add_tag(const Entity& e, std::string s);
+	void add_group(const Entity& e, std::string s);
 
 	// Component managment
 	template <typename TComponent, typename ...Args>
@@ -168,6 +173,10 @@ private:
 	std::unordered_map<std::type_index, std::shared_ptr<System>> systems{};
 	std::set<Entity> entities_to_add{};
 	std::set<Entity> entities_to_free{};
+	std::unordered_map<int, std::string> entity_tag{};
+	std::unordered_map<std::string, int> tag_entity{};
+	std::unordered_map<std::string, std::set<int>> group_entity{};
+	std::unordered_map<int, std::string> entity_group{};
 };
 
 template <typename TComponent, typename ...Args>

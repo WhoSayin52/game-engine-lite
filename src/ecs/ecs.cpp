@@ -13,6 +13,14 @@ void Entity::free() {
 	registry->free_entity(*this);
 }
 
+void Entity::add_tag(std::string s) {
+	registry->add_tag(*this, s);
+}
+
+void Entity::add_group(std::string s) {
+	registry->add_group(*this, s);
+}
+
 void System::add_entity(const Entity& entity) {
 	entities.push_back(entity);
 }
@@ -107,3 +115,12 @@ void Registry::free_entity(const Entity& entity) {
 	entities_to_free.insert(entity);
 }
 
+void Registry::add_tag(const Entity& e, std::string s) {
+	entity_tag.insert({ e.get_id(), s });
+	tag_entity.insert({ s, e.get_id() });
+}
+
+void Registry::add_group(const Entity& e, std::string s) {
+	group_entity[s].insert(e.get_id());
+	entity_group.insert({ e.get_id(), s });
+}

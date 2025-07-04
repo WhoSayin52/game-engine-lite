@@ -139,6 +139,7 @@ void Game::load_level([[maybe_unused]] int level) {
 
 	// Chopper
 	Entity chopper = registry->create_entity();
+	chopper.add_tag("player");
 	chopper.add_component<TransformComponent>(
 		glm::dvec2(10.0, 10.0),
 		glm::dvec2(1.0, 1.0),
@@ -165,6 +166,7 @@ void Game::load_level([[maybe_unused]] int level) {
 
 	// Tank
 	Entity tank{ registry->create_entity() };
+	tank.add_group("enemies");
 	tank.add_component<TransformComponent>(
 		glm::dvec2(300.0, 10.0),
 		glm::dvec2(1.0, 1.0),
@@ -183,6 +185,7 @@ void Game::load_level([[maybe_unused]] int level) {
 
 	// Truck
 	Entity truck{ registry->create_entity() };
+	truck.add_group("enemies");
 	truck.add_component<TransformComponent>(
 		glm::dvec2(10.0, 10.0),
 		glm::dvec2(1.0, 1.0),
