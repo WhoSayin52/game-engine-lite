@@ -96,6 +96,7 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 			glm::ivec2 pos{ map[row][col] };
 
 			Entity tile{ registry->create_entity() };
+			tile.add_group("tiles");
 
 			tile.add_component<TransformComponent>(
 				glm::dvec2(

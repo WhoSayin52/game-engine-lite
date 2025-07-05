@@ -2,10 +2,10 @@
 #define HEALTH_COMPONENT_HPP
 
 struct HealthComponent {
-	int health_percentage{};
+	int health{};
 
-	HealthComponent(int health_percentage = 100)
-		: health_percentage{ health_percentage } {
+	HealthComponent(int health = 100)
+		: health{ health } {
 	}
 };
 

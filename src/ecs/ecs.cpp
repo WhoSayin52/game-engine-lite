@@ -13,13 +13,22 @@ void Entity::free() {
 	registry->free_entity(*this);
 }
 
-void Entity::add_tag(std::string s) {
+void Entity::add_tag(const std::string& s) {
 	registry->add_tag(*this, s);
 }
 
-void Entity::add_group(std::string s) {
+bool Entity::has_tag(const std::string& s) const {
+	return registry->has_tag(*this, s);
+}
+
+void Entity::add_group(const std::string& s) {
 	registry->add_group(*this, s);
 }
+
+bool Entity::belong_to_group(const std::string& s) const {
+	return registry->belong_to_group(*this, s);
+}
+
 
 void System::add_entity(const Entity& entity) {
 	entities.push_back(entity);
@@ -56,6 +65,8 @@ void Registry::update() {
 	entities_to_add.clear();
 
 	for (const Entity& entity : entities_to_free) {
+		remove_tag(entity);
+		remove_group(entity);
 		remove_entity_from_systems(entity);
 		entity_component_signatures[static_cast<std::size_t>(entity.get_id())].reset();
 		free_ids.push_back(entity.get_id());
@@ -115,12 +126,65 @@ void Registry::free_entity(const Entity& entity) {
 	entities_to_free.insert(entity);
 }
 
-void Registry::add_tag(const Entity& e, std::string s) {
+void Registry::add_tag(const Entity& e, const std::string& s) {
 	entity_tag.insert({ e.get_id(), s });
-	tag_entity.insert({ s, e.get_id() });
+	tag_entity.insert({ s, e });
 }
 
-void Registry::add_group(const Entity& e, std::string s) {
-	group_entity[s].insert(e.get_id());
+void Registry::remove_tag(const Entity& e) {
+
+	int id{ e.get_id() };
+	if (!entity_tag.contains(id)) {
+		return;
+	}
+
+	std::string tag{ entity_tag[id] };
+	entity_tag.erase(id);
+	tag_entity.erase(tag);
+}
+
+bool Registry::has_tag(const Entity& e, const std::string& s) const {
+	auto itr{ entity_tag.find(e.get_id()) };
+
+	if (itr != entity_tag.end()) {
+		return itr->second == s;
+	}
+	else {
+		return false;
+	}
+}
+
+Entity Registry::get_entity_by_tag(const std::string& s) const {
+	return tag_entity.at(s);
+}
+
+void Registry::add_group(const Entity& e, const std::string& s) {
+	group_entity[s].insert(e);
 	entity_group.insert({ e.get_id(), s });
+}
+
+void Registry::remove_group(const Entity& e) {
+	int id{ e.get_id() };
+	if (!entity_group.contains(id)) {
+		return;
+	}
+
+	std::string group{ entity_group[id] };
+	entity_group.erase(id);
+	group_entity[group].erase(e);
+}
+
+bool Registry::belong_to_group(const Entity& e, const std::string& s) const {
+	auto itr{ entity_group.find(e.get_id()) };
+
+	if (itr != entity_group.end()) {
+		return itr->second == s;
+	}
+	else {
+		return false;
+	}
+}
+
+std::set<Entity> Registry::get_entities_by_group(const std::string& s) const {
+	return group_entity.at(s);
 }

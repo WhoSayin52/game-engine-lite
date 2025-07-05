@@ -36,8 +36,10 @@ public:
 	int get_id() const;
 	void free();
 
-	void add_tag(std::string s);
-	void add_group(std::string s);
+	void add_tag(const std::string& s);
+	bool has_tag(const std::string& s) const;
+	void add_group(const std::string& s);
+	bool belong_to_group(const std::string& s) const;
 
 	template <typename TComponent, typename ...Args>
 	void add_component(Args&& ...args);
@@ -75,8 +77,6 @@ public:
 		static const int id = next_id++;
 		return id;
 	}
-
-private:
 };
 
 /*
@@ -136,8 +136,16 @@ public:
 	// Entity managment
 	Entity create_entity();
 	void free_entity(const Entity& entity);
-	void add_tag(const Entity& e, std::string s);
-	void add_group(const Entity& e, std::string s);
+
+	void add_tag(const Entity& e, const std::string& s);
+	void remove_tag(const Entity& e);
+	bool has_tag(const Entity& e, const std::string& s) const;
+	Entity get_entity_by_tag(const std::string& s) const;
+
+	void add_group(const Entity& e, const std::string& s);
+	void remove_group(const Entity& e);
+	bool belong_to_group(const Entity& e, const std::string& s) const;
+	std::set<Entity> get_entities_by_group(const std::string& s) const;
 
 	// Component managment
 	template <typename TComponent, typename ...Args>
@@ -174,8 +182,8 @@ private:
 	std::set<Entity> entities_to_add{};
 	std::set<Entity> entities_to_free{};
 	std::unordered_map<int, std::string> entity_tag{};
-	std::unordered_map<std::string, int> tag_entity{};
-	std::unordered_map<std::string, std::set<int>> group_entity{};
+	std::unordered_map<std::string, Entity> tag_entity{};
+	std::unordered_map<std::string, std::set<Entity>> group_entity{};
 	std::unordered_map<int, std::string> entity_group{};
 };
 

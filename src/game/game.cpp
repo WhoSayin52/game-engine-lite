@@ -141,12 +141,13 @@ void Game::load_level([[maybe_unused]] int level) {
 	Entity chopper = registry->create_entity();
 	chopper.add_tag("player");
 	chopper.add_component<TransformComponent>(
-		glm::dvec2(10.0, 10.0),
+		glm::dvec2(50.0, 50.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
 	chopper.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	chopper.add_component<SpriteComponent>("chopper", 1);
+	chopper.add_component<BoxColliderComponent>(32, 32);
 	chopper.add_component<AnimationComponent>(2, 0.1, true);
 	chopper.add_component<CameraComponent>();
 	chopper.add_component<KeyboardControlComponent>(
@@ -168,7 +169,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	Entity tank{ registry->create_entity() };
 	tank.add_group("enemies");
 	tank.add_component<TransformComponent>(
-		glm::dvec2(300.0, 10.0),
+		glm::dvec2(300.0, 100.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
@@ -176,7 +177,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 	tank.add_component<BoxColliderComponent>(32, 32);
 	tank.add_component<ProjectileEmitterComponent>(
-		glm::dvec2{ 50.0, 0 },
+		glm::dvec2{ -50.0, 0 },
 		10,
 		2.0,
 		5.0

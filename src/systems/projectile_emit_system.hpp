@@ -46,6 +46,7 @@ public:
 				}
 
 				Entity projectile{ registry.create_entity() };
+				projectile.add_group("projectiles");
 				projectile.add_component<TransformComponent>(projectile_pos);
 				projectile.add_component<RigidbodyComponent>(emitter.velocity);
 				projectile.add_component<SpriteComponent>("bullet", 3, false, 4, 4);
