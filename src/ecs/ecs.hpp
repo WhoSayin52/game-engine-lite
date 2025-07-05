@@ -103,12 +103,15 @@ private:
 class IPool {
 public:
 	virtual ~IPool() = 0;
+	virtual void remove_entity_from_pool(int entity_id) = 0;
 };
 
 template <typename TComponent>
 class Pool : public IPool {
 public:
-	Pool(std::size_t size = 100) : data(size) {}
+	Pool(std::size_t size = 100) {
+		data.reserve(size);
+	}
 	~Pool() final override = default;
 
 	bool empty() const { return data.empty(); }
@@ -116,13 +119,18 @@ public:
 	void resize(std::size_t size) { data.resize(size); }
 	void clear() { data.clear(); }
 	void add(TComponent object) { data.push_back(object); }
-	void set(std::size_t index, TComponent object) { data[index] = object; }
-	TComponent& get(std::size_t index) { return static_cast<TComponent&>(data[index]); }
+	void set(int entity_id, TComponent object);
+	TComponent& get(int entity_id) { return static_cast<TComponent&>(data[entity_index[entity_id]]); }
+	void remove(int entity_id);
+	void remove_entity_from_pool(int entity_id) override;
 
 	TComponent& operator[](std::size_t index) { return data[index]; }
 
 private:
 	std::vector<TComponent> data{};
+
+	std::unordered_map<int, std::size_t> entity_index{};
+	std::unordered_map<std::size_t, int> index_entity{};
 };
 
 class Registry {
@@ -214,6 +222,43 @@ void System::require_component() {
 	component_signature.set(component_index);
 }
 
+template <typename TComponent>
+void Pool<TComponent>::set(int entity_id, TComponent object) {
+
+	if (entity_index.find(entity_id) != entity_index.end()) {
+		std::size_t index{ static_cast<std::size_t>(entity_id) };
+		data[index] = object;
+	}
+	else {
+		std::size_t index{ data.size() };
+		entity_index.try_emplace(entity_id, index);
+		index_entity.try_emplace(index, entity_id);
+		data.push_back(object);
+	}
+}
+
+template <typename TComponent>
+void Pool<TComponent>::remove(int entity_id) {
+	std::size_t index_to_remove{ entity_index[entity_id] };
+	std::size_t index_of_last{ data.size() - 1 };
+	data[index_to_remove] = data[index_of_last];
+
+	int id_of_last{ index_entity[index_of_last] };
+	entity_index[id_of_last] = index_to_remove;
+	index_entity[index_to_remove] = id_of_last;
+
+	entity_index.erase(entity_id);
+	index_entity.erase(index_of_last);
+	data.erase(data.begin() + static_cast<int>(index_of_last));
+}
+
+template <typename TComponent>
+void Pool<TComponent>::remove_entity_from_pool(int entity_id) {
+	if (entity_index.find(entity_id) != entity_index.end()) {
+		remove(entity_id);
+	}
+}
+
 template <typename TComponent, typename ...Args>
 void Registry::add_component(const Entity& entity, Args&& ...args) {
 	const int component_id{ Component<TComponent>::get_id() };
@@ -232,13 +277,9 @@ void Registry::add_component(const Entity& entity, Args&& ...args) {
 
 	std::shared_ptr<Pool<TComponent>> pool = std::static_pointer_cast<Pool<TComponent>>(component_pools[component_index]);
 
-	if (entity_index >= pool->size()) {
-		pool->resize(static_cast<std::size_t>(entity_count));
-	}
-
 	TComponent new_component{ std::forward<Args>(args)... };
 
-	pool->set(entity_index, new_component);
+	pool->set(entity_id, new_component);
 	entity_component_signatures[entity_index].set(component_index);
 
 	Logger::log("Component id " + std::to_string(component_id) + " was added to entity id " + std::to_string(entity_id));
@@ -251,6 +292,10 @@ void Registry::remove_component(const Entity& entity) {
 
 	const std::size_t component_index{ static_cast<std::size_t>(component_id) };
 	const std::size_t entity_index{ static_cast<std::size_t>(entity_id) };
+
+	std::shared_ptr<Pool<TComponent>> pool = std::static_pointer_cast<Pool<TComponent>>(component_pools[component_index]);
+
+	pool->remove(entity_id);
 
 	entity_component_signatures[entity_index].set(component_index, false);
 
@@ -277,9 +322,7 @@ TComponent& Registry::get_component(const Entity& entity) const {
 		std::static_pointer_cast<Pool<TComponent>>(component_pools[component_index])
 	};
 
-	const std::size_t entity_index{ static_cast<std::size_t>(entity.get_id()) };
-
-	return component_pool->get(entity_index);
+	return component_pool->get(entity.get_id());
 }
 
 template <typename TSystem, typename ...Args>

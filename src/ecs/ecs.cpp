@@ -65,6 +65,11 @@ void Registry::update() {
 	entities_to_add.clear();
 
 	for (const Entity& entity : entities_to_free) {
+
+		for (auto p : component_pools) {
+			p->remove_entity_from_pool(entity.get_id());
+		}
+
 		remove_tag(entity);
 		remove_group(entity);
 		remove_entity_from_systems(entity);
