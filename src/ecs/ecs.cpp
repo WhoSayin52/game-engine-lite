@@ -67,7 +67,9 @@ void Registry::update() {
 	for (const Entity& entity : entities_to_free) {
 
 		for (auto p : component_pools) {
-			p->remove_entity_from_pool(entity.get_id());
+			if (p != nullptr) {
+				p->remove_entity_from_pool(entity.get_id());
+			}
 		}
 
 		remove_tag(entity);
