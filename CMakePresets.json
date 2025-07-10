@@ -8,7 +8,7 @@
 			"binaryDir": "${sourceDir}/build",
 			"cacheVariables": {
 				"CMAKE_CXX_FLAGS": "-pedantic-errors -Wall -Wextra -Wconversion -Wsign-conversion -Werror -Weffc++",
-				"CMAKE_CXX_FLAGS_DEBUG": "-Og -ggdb",
+				"CMAKE_CXX_FLAGS_DEBUG": "-O0 -ggdb",
 				"CMAKE_CXX_FLAGS_RELEASE": "-O2 -DNDEBUG"
 			}
 		}

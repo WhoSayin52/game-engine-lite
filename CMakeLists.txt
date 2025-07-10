@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 
@@ -15,6 +16,6 @@ set(EXE game_engine)
 add_executable(${EXE})
 
 target_include_directories(${EXE} SYSTEM PRIVATE libs)
-target_link_libraries(${EXE} PRIVATE SDL2 SDL2_image)
+target_link_libraries(${EXE} PRIVATE SDL2 SDL2_image SDL2_ttf)
 
 add_subdirectory(src)

@@ -9,6 +9,7 @@
 #include "../components/projectile_emitter_component.hpp"
 #include "../components/rigidbody_component.hpp"
 #include "../components/sprite_component.hpp"
+#include "../components/text_label_component.hpp"
 #include "../components/transform_component.hpp"
 
 #include "../systems/animation_system.hpp"
@@ -21,6 +22,7 @@
 #include "../systems/projectile_emit_system.hpp"
 #include "../systems/render_collision_system.hpp"
 #include "../systems/render_system.hpp"
+#include "../systems/render_text_system.hpp"
 
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
@@ -50,6 +52,12 @@ void Game::init() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		std::string err(SDL_GetError());
 		Logger::err("Failed to initialize SDL: SDL Error: " + err);
+		return;
+	}
+
+	if (TTF_Init() != 0) {
+		std::string err(SDL_GetError());
+		Logger::err("Failed to initialize SDL_TTF: SDL Error: " + err);
 		return;
 	}
 
@@ -114,9 +122,12 @@ void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<KeyboarControlSystem>();
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
+	registry->add_system<RenderTextSystem>();
 	registry->add_system<RenderCollisionSystem>();
 	registry->add_system<ProjectileDurationSystem>();
 	registry->add_system<ProjectileEmitSystem>();
+
+	asset_manager->add_font("arial", "/home/entity/Desktop/my_projects/pikuma/game_engine_2d/assets/fonts/arial.ttf", 12);
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper-spritesheet.png");
 	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
@@ -202,6 +213,13 @@ void Game::load_level([[maybe_unused]] int level) {
 		5.0
 	);
 	truck.add_component<HealthComponent>(100);
+
+	Entity label{ registry->create_entity() };
+	label.add_component<TextLabelComponent>(
+		glm::dvec2{ 20, 20 },
+		"Text Label TEST!",
+		"arial"
+	);
 }
 
 void Game::setup() {
@@ -257,6 +275,8 @@ void Game::render() {
 
 	registry->get_system<RenderSystem>().update(renderer, *asset_manager, &camera);
 
+	registry->get_system<RenderTextSystem>().update(renderer, *asset_manager, &camera);
+
 	if (is_debugging) {
 		registry->get_system<RenderCollisionSystem>().update(renderer, &camera);
 	}
@@ -267,6 +287,7 @@ void Game::render() {
 void Game::destroy() {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+	//TTF_Quit();
 	SDL_Quit();
 }
 

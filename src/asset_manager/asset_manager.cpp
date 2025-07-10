@@ -28,6 +28,16 @@ void AssetManager::clear_assets() {
 		it = textures.erase(it);
 	}
 
+	textures.clear();
+
+	for (auto it{ fonts.begin() }; it != fonts.end();) {
+		TTF_CloseFont(it->second);
+		it->second = nullptr;
+		it = fonts.erase(it);
+	}
+
+	fonts.clear();
+
 	maps.clear();
 }
 
@@ -121,4 +131,21 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 
 	Game::map_width = static_cast<int>(map.back().size()) * static_cast<int>(tile_scale) * sprite_config::height;
 	Game::map_height = static_cast<int>(map.size()) * static_cast<int>(tile_scale) * sprite_config::width;
+}
+
+void AssetManager::add_font(const std::string& asset_id, const std::string& path, int font_size) {
+
+	fonts.try_emplace(asset_id, TTF_OpenFont(path.c_str(), font_size));
+}
+
+TTF_Font* AssetManager::get_font(const std::string& asset_id) {
+	auto itr{ fonts.find(asset_id) };
+	auto end{ fonts.end() };
+	TTF_Font* font{ nullptr };
+
+	if (itr != end) {
+		font = fonts[asset_id];
+	}
+
+	return font;
 }
