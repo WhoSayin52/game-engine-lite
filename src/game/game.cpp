@@ -214,11 +214,14 @@ void Game::load_level([[maybe_unused]] int level) {
 	);
 	truck.add_component<HealthComponent>(100);
 
+	//Title
 	Entity label{ registry->create_entity() };
 	label.add_component<TextLabelComponent>(
-		glm::dvec2{ 20, 20 },
-		"Text Label TEST!",
-		"arial"
+		glm::dvec2{ window_width / 4, 10 },
+		"Chopper 1.0",
+		"arial",
+		SDL_Color{ 0, 255, 0, 255 },
+		true
 	);
 }
 
