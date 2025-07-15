@@ -48,13 +48,14 @@ public:
 			SDL_QueryTexture(texture, nullptr, nullptr, &label_width, &label_height);
 
 			SDL_Rect dest_rect{
-				text_label.position.x - camera_x,
-				text_label.position.y - camera_y,
+				text_label.position.x - static_cast<int>(camera_x),
+				text_label.position.y - static_cast<int>(camera_y),
 				label_width,
 				label_height
 			};
 
 			SDL_RenderCopy(renderer, texture, nullptr, &dest_rect);
+			SDL_DestroyTexture(texture);
 		}
 	}
 };

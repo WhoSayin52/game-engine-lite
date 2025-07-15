@@ -22,9 +22,9 @@ public:
 			const BoxColliderComponent& collider{ e.get_component<BoxColliderComponent>() };
 
 			SDL_Rect collider_rect{
-				static_cast<int>(transform.position.x + collider.offset.x) - camera->x,
+				static_cast<int>(transform.position.x + collider.offset.x) - static_cast<int>(camera->x),
 				static_cast<int>(transform.position.y + collider.offset.y) -
-				camera->y,
+				static_cast<int>(camera->y),
 				collider.width,
 				collider.height
 			};

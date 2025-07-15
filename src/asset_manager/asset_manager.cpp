@@ -135,7 +135,15 @@ void AssetManager::load_map(Registry* registry, const std::string& asset_id) {
 
 void AssetManager::add_font(const std::string& asset_id, const std::string& path, int font_size) {
 
-	fonts.try_emplace(asset_id, TTF_OpenFont(path.c_str(), font_size));
+	TTF_Font* font{ TTF_OpenFont(path.c_str(), font_size) };
+
+	if (font == nullptr) {
+		Logger::err("Failed to load font '" + asset_id + "' at path '" + path + "': " + TTF_GetError());
+		exit(EXIT_FAILURE);
+		return;
+	}
+
+	fonts.try_emplace(asset_id, font);
 }
 
 TTF_Font* AssetManager::get_font(const std::string& asset_id) {
@@ -144,7 +152,7 @@ TTF_Font* AssetManager::get_font(const std::string& asset_id) {
 	TTF_Font* font{ nullptr };
 
 	if (itr != end) {
-		font = fonts[asset_id];
+		font = itr->second;
 	}
 
 	return font;

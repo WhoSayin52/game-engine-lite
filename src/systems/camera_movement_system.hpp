@@ -19,31 +19,34 @@ public:
 		for (Entity& entity : get_entities()) {
 			TransformComponent& transfrom{ entity.get_component<TransformComponent>() };
 
-			int entity_x{ static_cast<int>(transfrom.position.x) };
-			int entity_y{ static_cast<int>(transfrom.position.y) };
+			double entity_x{ static_cast<double>(transfrom.position.x) };
+			double entity_y{ static_cast<double>(transfrom.position.y) };
 
-			int mid_x{ camera->w / 2 };
-			int mid_y{ camera->h / 2 };
+			double w{ static_cast<double>(camera->w) };
+			double h{ static_cast<double>(camera->h) };
 
-			int new_x{ entity_x - mid_x };
-			int new_y{ entity_y - mid_y };
+			double mid_x{ w / 2.0 };
+			double mid_y{ h / 2.0 };
 
-			if (new_x < 0) {
-				new_x = 0;
+			double new_x{ entity_x - mid_x };
+			double new_y{ entity_y - mid_y };
+
+			if (new_x < 0.0) {
+				new_x = 0.0;
 			}
-			else if (new_x + camera->w > Game::map_width) {
-				new_x = Game::map_width - camera->w;
+			else if (new_x + w > static_cast<double>(Game::map_width)) {
+				new_x = static_cast<double>(Game::map_width) - w;
 			}
 
 			if (new_y < 0) {
 				new_y = 0;
 			}
-			else if (new_y + camera->h > Game::map_height) {
-				new_y = Game::map_height - camera->h;
+			else if (new_y + h > static_cast<double>(Game::map_height)) {
+				new_y = static_cast<double>(Game::map_height) - h;
 			}
 
-			camera->x = new_x;
-			camera->y = new_y;
+			camera->x = static_cast<int>(std::round(new_x));
+			camera->y = static_cast<int>(std::round(new_y));
 		}
 	}
 };

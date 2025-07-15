@@ -21,6 +21,7 @@
 #include "../systems/projectile_duration_system.hpp"
 #include "../systems/projectile_emit_system.hpp"
 #include "../systems/render_collision_system.hpp"
+#include "../systems/render_health_system.hpp"
 #include "../systems/render_system.hpp"
 #include "../systems/render_text_system.hpp"
 
@@ -122,12 +123,16 @@ void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<KeyboarControlSystem>();
 	registry->add_system<MovementSystem>();
 	registry->add_system<RenderSystem>();
+	registry->add_system<RenderHealthSystem>();
 	registry->add_system<RenderTextSystem>();
 	registry->add_system<RenderCollisionSystem>();
 	registry->add_system<ProjectileDurationSystem>();
 	registry->add_system<ProjectileEmitSystem>();
 
-	asset_manager->add_font("arial", "/home/entity/Desktop/my_projects/pikuma/game_engine_2d/assets/fonts/arial.ttf", 12);
+	asset_manager->add_font("arial", "../assets/fonts/arial.ttf", 12);
+	asset_manager->add_font("charriot", "../assets/fonts/charriot.ttf", 12);
+	asset_manager->add_font("pico8_4", "../assets/fonts/pico8.ttf", 4);
+	asset_manager->add_font("pico8_10", "../assets/fonts/pico8.ttf", 10);
 
 	asset_manager->add_texture(renderer, "chopper", "../assets/images/chopper-spritesheet.png");
 	asset_manager->add_texture(renderer, "radar", "../assets/images/radar.png");
@@ -263,9 +268,9 @@ void Game::update() {
 	registry->get_system<KeyboarControlSystem>().listen_to_event(*event_manager);
 
 	registry->get_system<AnimationSystem>().update(delta_time);
-	registry->get_system<CameraMovementSystem>().update(&camera);
 	registry->get_system<CollisionSystem>().update(*event_manager);
 	registry->get_system<MovementSystem>().update(delta_time);
+	registry->get_system<CameraMovementSystem>().update(&camera);
 	registry->get_system<ProjectileDurationSystem>().update(delta_time);
 	registry->get_system<ProjectileEmitSystem>().update(*registry, delta_time);
 
@@ -277,7 +282,7 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	registry->get_system<RenderSystem>().update(renderer, *asset_manager, &camera);
-
+	registry->get_system<RenderHealthSystem>().update(renderer, *asset_manager, &camera);
 	registry->get_system<RenderTextSystem>().update(renderer, *asset_manager, &camera);
 
 	if (is_debugging) {
