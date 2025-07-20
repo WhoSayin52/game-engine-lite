@@ -19,3 +19,28 @@ target_include_directories(${EXE} SYSTEM PRIVATE libs)
 target_link_libraries(${EXE} PRIVATE SDL2 SDL2_image SDL2_ttf)
 
 add_subdirectory(src)
+
+add_library(imgui STATIC
+    libs/imgui/imgui.cpp
+    libs/imgui/imgui_draw.cpp
+    libs/imgui/imgui_tables.cpp
+    libs/imgui/imgui_widgets.cpp
+    libs/imgui/imgui_demo.cpp
+    libs/imgui/imgui_impl_sdl2.cpp
+    libs/imgui/imgui_impl_sdlrenderer2.cpp 
+)
+
+target_include_directories(imgui SYSTEM PRIVATE libs/imgui libs/imgui/backends)
+
+target_compile_options(imgui PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-w>
+    $<$<CXX_COMPILER_ID:Clang>:-w>
+    $<$<CXX_COMPILER_ID:MSVC>:/w>
+)
+
+target_include_directories(imgui PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(imgui PRIVATE SDL2)
+
+target_link_libraries(${EXE} PRIVATE imgui)
+
+

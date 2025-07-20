@@ -21,6 +21,7 @@
 #include "../systems/projectile_duration_system.hpp"
 #include "../systems/projectile_emit_system.hpp"
 #include "../systems/render_collision_system.hpp"
+#include "../systems/render_gui_system.hpp"
 #include "../systems/render_health_system.hpp"
 #include "../systems/render_system.hpp"
 #include "../systems/render_text_system.hpp"
@@ -28,8 +29,13 @@
 #include "../logger/logger.hpp"
 #include "../ecs/ecs.hpp"
 
-#include <glm/glm.hpp>
 #include <SDL2/SDL_image.h>
+
+#include <glm/glm.hpp>
+
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl2.h>
+#include <imgui/imgui_impl_sdlrenderer2.h>
 
 int Game::window_width{};
 int Game::window_height{};
@@ -66,8 +72,8 @@ void Game::init() {
 	//SDL_GetCurrentDisplayMode(0, &display_mode);
 	//window_width = display_mode.w;
 	//window_height = display_mode.h;
-	window_width = 1152;
-	window_height = 864;
+	window_width = 800;
+	window_height = 640;
 
 	window = SDL_CreateWindow(
 		nullptr,
@@ -95,13 +101,27 @@ void Game::init() {
 		Logger::err("Failed to create renderer: SDL Error: " + err);
 		return;
 	}
-	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-	SDL_RenderSetScale(renderer, 2.0f, 2.0f);
+	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	//SDL_RenderSetScale(renderer, 2.0f, 2.0f);
 
+	//Dear ImGui init
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+	ImGui_ImplSDLRenderer2_Init(renderer);
+
+	// Initialize the camera view with the entire screen area.
+	// Division by 2 is due to SDL_RenderSetScale() above.
 	camera.x = 0;
 	camera.y = 0;
-	camera.w = window_width / 2;
-	camera.h = window_height / 2;
+	camera.w = window_width;
+	camera.h = window_height;
 
 	is_running = true;
 }
@@ -126,6 +146,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	registry->add_system<RenderHealthSystem>();
 	registry->add_system<RenderTextSystem>();
 	registry->add_system<RenderCollisionSystem>();
+	registry->add_system<RenderGuiSystem>();
 	registry->add_system<ProjectileDurationSystem>();
 	registry->add_system<ProjectileEmitSystem>();
 
@@ -237,6 +258,17 @@ void Game::setup() {
 void Game::input() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
+		//ImGui SDL input
+		ImGui_ImplSDL2_ProcessEvent(&event);
+		ImGuiIO& io{ ImGui::GetIO() };
+
+		int mouse_x, mouse_y;
+		const Uint32 buttons{ SDL_GetMouseState(&mouse_x, &mouse_y) };
+		io.MousePos = ImVec2(static_cast<float>(mouse_x), static_cast<float>(mouse_y));
+		io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+		io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+
+		//Handle core SDL event
 		switch (event.type) {
 		case SDL_QUIT:
 			is_running = false;
@@ -287,12 +319,17 @@ void Game::render() {
 
 	if (is_debugging) {
 		registry->get_system<RenderCollisionSystem>().update(renderer, &camera);
+		registry->get_system<RenderGuiSystem>().update(renderer);
 	}
 
 	SDL_RenderPresent(renderer);
 }
 
 void Game::destroy() {
+	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	//TTF_Quit();
