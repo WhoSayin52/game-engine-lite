@@ -212,7 +212,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	);
 	tank.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
-	tank.add_component<BoxColliderComponent>(32, 32);
+	tank.add_component<BoxColliderComponent>(25, 20, glm::dvec2(5.0, 5.0));
 	tank.add_component<ProjectileEmitterComponent>(
 		glm::dvec2{ -50.0, 0 },
 		10,
@@ -225,13 +225,13 @@ void Game::load_level([[maybe_unused]] int level) {
 	Entity truck{ registry->create_entity() };
 	truck.add_group("enemies");
 	truck.add_component<TransformComponent>(
-		glm::dvec2(10.0, 10.0),
+		glm::dvec2(10.0, 110.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
 	truck.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
 	truck.add_component<SpriteComponent>("truck_ford_right", 1);
-	truck.add_component<BoxColliderComponent>(32, 32);
+	truck.add_component<BoxColliderComponent>(25, 20, glm::dvec2(5.0, 5.0));
 	truck.add_component<ProjectileEmitterComponent>(
 		glm::dvec2{ 50.0, 0 },
 		10,
@@ -243,7 +243,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	//Title
 	Entity label{ registry->create_entity() };
 	label.add_component<TextLabelComponent>(
-		glm::dvec2{ window_width / 4, 10 },
+		glm::dvec2{ window_width / 2, 10 },
 		"Chopper 1.0",
 		"arial",
 		SDL_Color{ 0, 255, 0, 255 },
@@ -276,7 +276,7 @@ void Game::input() {
 
 		case SDL_KEYDOWN:
 			if (event.key.keysym.sym == SDLK_ESCAPE) is_running = false;
-			if (event.key.keysym.sym == SDLK_d) is_debugging = !is_debugging;
+			if (event.key.keysym.sym == SDLK_F1) is_debugging = !is_debugging;
 
 			event_manager->emit<KeyPressedEvent>(event.key.keysym.sym);
 
@@ -319,7 +319,7 @@ void Game::render() {
 
 	if (is_debugging) {
 		registry->get_system<RenderCollisionSystem>().update(renderer, &camera);
-		registry->get_system<RenderGuiSystem>().update(renderer);
+		registry->get_system<RenderGuiSystem>().update(renderer, *registry, camera);
 	}
 
 	SDL_RenderPresent(renderer);
