@@ -24,6 +24,7 @@ struct SpriteComponent {
 		sprite_config::width,
 		sprite_config::height
 	};
+	SDL_RendererFlip flip{SDL_FLIP_NONE};
 
 	SpriteComponent(
 		const std::string& asset_id = "",
@@ -36,7 +37,7 @@ struct SpriteComponent {
 	) :
 		asset_id{ asset_id }, z_index{ z_index },
 		is_fixed{ is_fixed }, width{ width }, height{ height },
-		src_rect{ src_x, src_y, width, height }
+		src_rect{ src_x, src_y, width, height }, flip{SDL_FLIP_NONE}
 	{
 	}
 };

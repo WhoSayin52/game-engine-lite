@@ -59,7 +59,7 @@ public:
 				&dest_rect,
 				transform.rotation,
 				nullptr,
-				SDL_FLIP_NONE
+				sprite.flip
 			);
 		}
 	}

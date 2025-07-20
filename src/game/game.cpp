@@ -160,6 +160,7 @@ void Game::load_level([[maybe_unused]] int level) {
 	asset_manager->add_texture(renderer, "tank_panther_right", "../assets/images/tank-panther-right.png");
 	asset_manager->add_texture(renderer, "truck_ford_right", "../assets/images/truck-ford-right.png");
 	asset_manager->add_texture(renderer, "bullet", "../assets/images/bullet.png");
+	asset_manager->add_texture(renderer, "tree", "../assets/images/tree.png");
 
 	asset_manager->add_map(renderer, "jungle_map", "../assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png");
 	asset_manager->load_map(registry.get(), "jungle_map");
@@ -206,11 +207,11 @@ void Game::load_level([[maybe_unused]] int level) {
 	Entity tank{ registry->create_entity() };
 	tank.add_group("enemies");
 	tank.add_component<TransformComponent>(
-		glm::dvec2(300.0, 100.0),
+		glm::dvec2(235.0, 235.0),
 		glm::dvec2(1.0, 1.0),
 		0.0
 	);
-	tank.add_component<RigidbodyComponent>(glm::dvec2(0.0, 0.0));
+	tank.add_component<RigidbodyComponent>(glm::dvec2(20.0, 0.0));
 	tank.add_component<SpriteComponent>("tank_panther_right", 1);
 	tank.add_component<BoxColliderComponent>(25, 20, glm::dvec2(5.0, 5.0));
 	tank.add_component<ProjectileEmitterComponent>(
@@ -239,6 +240,27 @@ void Game::load_level([[maybe_unused]] int level) {
 		5.0
 	);
 	truck.add_component<HealthComponent>(100);
+
+	//Obstacle
+	Entity tree_a{ registry->create_entity() };
+	tree_a.add_group("obstacles");
+	tree_a.add_component<TransformComponent>(
+		glm::dvec2(335.0, 235.0),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	tree_a.add_component<SpriteComponent>("tree", 1, false, 16, 32);
+	tree_a.add_component<BoxColliderComponent>(16, 32);
+
+	Entity tree_b{ registry->create_entity() };
+	tree_b.add_group("obstacles");
+	tree_b.add_component<TransformComponent>(
+		glm::dvec2(135.0, 235.0),
+		glm::dvec2(1.0, 1.0),
+		0.0
+	);
+	tree_b.add_component<SpriteComponent>("tree", 1, false, 16, 32);
+	tree_b.add_component<BoxColliderComponent>(16, 32);
 
 	//Title
 	Entity label{ registry->create_entity() };
@@ -296,6 +318,7 @@ void Game::update() {
 
 	event_manager->reset();
 
+	registry->get_system<MovementSystem>().listen_to_event(*event_manager);
 	registry->get_system<DamageSystem>().listen_to_event(*event_manager);
 	registry->get_system<KeyboarControlSystem>().listen_to_event(*event_manager);
 

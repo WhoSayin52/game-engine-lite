@@ -71,15 +71,8 @@ private:
 		int b_y1{ static_cast<int>(b_transform.position.y + b_collider.offset.y) };
 		int b_y2{ static_cast<int>(b_transform.position.y + b_collider.offset.y + b_collider.height) };
 
-		bool x_collision{
-			(a_x1 <= b_x1 && b_x1 <= a_x2) ||
-			(a_x1 <= b_x2 && b_x2 <= a_x2)
-		};
-
-		bool y_collision{
-			(a_y1 <= b_y1 && b_y1 <= a_y2) ||
-			(a_y1 <= b_y2 && b_y2 <= a_y2)
-		};
+		bool x_collision = a_x1 < b_x2 && a_x2 > b_x1;
+		bool y_collision = a_y1 < b_y2 && a_y2 > b_y1;
 
 		return x_collision && y_collision;
 	}
