@@ -73,7 +73,7 @@ void Game::init() {
 	//window_width = display_mode.w;
 	//window_height = display_mode.h;
 	window_width = 800;
-	window_height = 640;
+	window_height = 600;
 
 	window = SDL_CreateWindow(
 		nullptr,
@@ -117,7 +117,7 @@ void Game::init() {
 	ImGui_ImplSDLRenderer2_Init(renderer);
 
 	// Initialize the camera view with the entire screen area.
-	// Division by 2 is due to SDL_RenderSetScale() above.
+	// Division by 2 is if SDL_RenderSetScale() above.
 	camera.x = 0;
 	camera.y = 0;
 	camera.w = window_width;

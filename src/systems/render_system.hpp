@@ -24,6 +24,21 @@ public:
 		std::vector<Entity> renderable_entities{};
 
 		for (const Entity& entity : get_entities()) {
+
+			auto& transform{ entity.get_component<TransformComponent>() };
+			auto& sprite{ entity.get_component<SpriteComponent>() };
+
+			bool is_outside_camera_view{
+				(transform.position.x + sprite.width * transform.scale.x) < camera->x ||
+				transform.position.x > (camera->x + camera->w) ||
+				(transform.position.y + sprite.height * transform.scale.y) < camera->y ||
+				transform.position.y > (camera->y + camera->h)
+			};
+
+			if (is_outside_camera_view && !sprite.is_fixed) {
+				continue;
+			}
+
 			renderable_entities.push_back(entity);
 		}
 
