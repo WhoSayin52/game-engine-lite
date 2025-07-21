@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(Lua REQUIRED)
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 
@@ -17,6 +18,7 @@ add_executable(${EXE})
 
 target_include_directories(${EXE} SYSTEM PRIVATE libs)
 target_link_libraries(${EXE} PRIVATE SDL2 SDL2_image SDL2_ttf)
+target_link_libraries(${EXE} PRIVATE lua5.4)
 
 add_subdirectory(src)
 
