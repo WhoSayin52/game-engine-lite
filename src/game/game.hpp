@@ -28,7 +28,6 @@ public:
 	Game operator=(const Game&) = delete;
 	void init();
 	void run();
-	void load_level(int level);
 	void setup();
 	void input();
 	void update();
