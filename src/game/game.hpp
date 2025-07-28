@@ -6,6 +6,7 @@
 #include "../event_manager/event_manager.hpp"
 
 #include <SDL2/SDL.h>
+#include <sol/sol.hpp>
 
 #include <memory>
 
@@ -41,6 +42,8 @@ private:
 	SDL_Window* window{ nullptr };
 	SDL_Renderer* renderer{ nullptr };
 	SDL_Rect camera{};
+
+	sol::state lua{};
 
 	std::unique_ptr<Registry> registry{ nullptr };
 	std::unique_ptr<AssetManager> asset_manager{ nullptr };

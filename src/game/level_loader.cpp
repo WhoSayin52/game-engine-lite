@@ -12,8 +12,6 @@
 #include "../components/text_label_component.hpp"
 #include "../components/transform_component.hpp"
 
-#include <sol/sol.hpp>
-
 LevelLoader::LevelLoader() {
 
 }
@@ -22,12 +20,54 @@ LevelLoader::~LevelLoader() {
 
 }
 
-void LevelLoader::load_level(SDL_Renderer* renderer, Registry* registry, AssetManager* asset_manager, int level) {
+void LevelLoader::load_level(sol::state& lua, SDL_Renderer* renderer, Registry* registry, AssetManager* asset_manager, int level_num) {
 
-	(void)level;
+	(void)renderer; (void)registry; (void)asset_manager;
 
-	sol::state lua;
-	lua.open_libraries(sol::lib::base);
+	sol::load_result script{ lua.load_file("../assets/scripts/level" + std::to_string(level_num) + ".lua") };
+
+	//Check syntax of script without executing
+	if (!script.valid()) {
+		sol::error err{ script };
+		std::string err_msg{ err.what() };
+		Logger::err("Lua script error detected: " + err_msg);
+		exit(EXIT_FAILURE);
+	}
+
+	//Executes lua script
+	lua.script_file("../assets/scripts/level" + std::to_string(level_num) + ".lua");
+
+	//Read level data table from lua script
+	sol::table level{ lua["Level"] };
+
+	//Read level assets
+	sol::table assets{ level["assets"] };
+
+	int i{ 0 };
+	while (true) {
+		sol::optional<sol::table> has_asset{ assets[i] };
+
+		if (has_asset != sol::nullopt) {
+			break;
+		}
+
+		sol::table asset{ assets[i] };
+
+		std::string asset_type{ asset["type"] };
+		std::string asset_id{ asset["id"] };
+
+		if (asset_type == "texture") {
+			asset_manager->add_texture(renderer, asset_id, asset["file"]);
+
+			Logger::log("New texture loaded to asset manager id: " + asset_id);
+		}
+		else if (asset_type == "font") {
+			asset_manager->add_font(asset_id, asset["file"], asset["font_size"]);
+
+			Logger::log("New font loaded to asset manager id: " + asset_id);
+		}
+		++i;
+	}
 
 	/*
 	asset_manager->add_font("arial", "../assets/fonts/arial.ttf", 12);

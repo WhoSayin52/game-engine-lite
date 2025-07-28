@@ -7,13 +7,14 @@
 #include "../ecs/ecs.hpp"
 
 #include <SDL2/SDL.h>
+#include <sol/sol.hpp>
 
 class LevelLoader {
 public:
 	LevelLoader();
 	~LevelLoader();
 
-	void load_level(SDL_Renderer* renderer, Registry* registry, AssetManager* asset_manager, int level);
+	void load_level(sol::state& lua, SDL_Renderer* renderer, Registry* registry, AssetManager* asset_manager, int level_num);
 };
 
 #endif //LEVEL_LOADER_HPP
