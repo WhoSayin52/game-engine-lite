@@ -12,6 +12,8 @@
 #include "../components/text_label_component.hpp"
 #include "../components/transform_component.hpp"
 
+#include <fstream>
+
 LevelLoader::LevelLoader() {
 
 }
@@ -66,6 +68,89 @@ void LevelLoader::load_level(sol::state& lua, SDL_Renderer* renderer, Registry* 
 
 			Logger::log("New font loaded to asset manager id: " + asset_id);
 		}
+		++i;
+	}
+
+	//Reading map
+	sol::table map{ level["tilemap"] };
+	std::string map_path{ map["map_file"] };
+	std::string map_texture_asset_id{ map["texture_asset_id"] };
+
+	int map_rows_count{ map["num_rows"] };
+	int map_cols_count{ map["num_cols"] };
+	int tile_size{ map["tile_size"] };
+
+	double map_scale{ map["scale"] };
+
+	std::fstream map_file{};
+	map_file.open(map_path);
+
+	for (int y{}; y < map_rows_count; ++y) {
+		for (int x{}; x < map_cols_count; ++x) {
+			char ch;
+			map_file.get(ch);
+			int src_rect_y{ std::atoi(&ch) * tile_size };
+			map_file.get(ch);
+			int src_rect_x{ std::atoi(&ch) * tile_size };
+			map_file.ignore();
+
+			Entity tile{ registry->create_entity() };
+			tile.add_component<TransformComponent>(
+				glm::dvec2(
+					x * (map_scale * tile_size),
+					y * (map_scale * tile_size)
+				),
+				glm::dvec2(
+					map_scale,
+					map_scale
+				),
+				0.0
+			);
+			tile.add_component<SpriteComponent>(
+				map_texture_asset_id,
+				0,
+				false,
+				tile_size,
+				tile_size,
+				src_rect_x,
+				src_rect_y
+			);
+		}
+	}
+
+	map_file.close();
+	Game::map_width = static_cast<int>(map_cols_count * tile_size * map_scale);
+	Game::map_height = static_cast<int>(map_rows_count * tile_size * map_scale);
+
+	//Reading entities
+	sol::table entities{ level["entities"] };
+
+	i = 0;
+	while (true) {
+		sol::optional<sol::table> has_entities{ entities[i] };
+		if (has_entities == sol::nullopt) {
+			break;
+		}
+
+		sol::table entity{ entities[i] };
+
+		Entity e{ registry->create_entity() };
+
+		//Tag
+		sol::optional<std::string> tag{ entity["tag"] };
+		if (tag != sol::nullopt) {
+			e.add_tag(entity["tag"]);
+		}
+
+		//Group
+		sol::optional<std::string> group{ entity["group"] };
+		if (group != sol::nullopt) {
+			e.add_group(entity["group"]);
+		}
+
+		// Components
+
+		
 		++i;
 	}
 
