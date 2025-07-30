@@ -12,6 +12,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <iostream>
+
 class RenderSystem : public System {
 public:
 	RenderSystem() {

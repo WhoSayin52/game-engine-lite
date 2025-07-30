@@ -16,7 +16,7 @@ struct ProjectileEmitterComponent {
 		glm::dvec2 velocity = { 50.0, 50.0 },
 		int damage = 10,
 		double emission_delay = 2.0,
-		double duration = 5.0,
+		double duration = 10.0,
 		bool is_friendly = false
 	) :
 		velocity{ velocity },

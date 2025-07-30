@@ -65,7 +65,7 @@ public:
 			std::string health_text{ std::to_string(health_amount) };
 			SDL_Surface* surface{
 				TTF_RenderText_Blended(
-					asset_manager.get_font("pico8_4"),
+					asset_manager.get_font("pico8-font-5"),
 					health_text.c_str(),
 					health_bar_color
 				)

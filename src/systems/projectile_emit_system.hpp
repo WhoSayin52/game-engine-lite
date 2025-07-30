@@ -49,7 +49,7 @@ public:
 				projectile.add_group("projectiles");
 				projectile.add_component<TransformComponent>(projectile_pos);
 				projectile.add_component<RigidbodyComponent>(emitter.velocity);
-				projectile.add_component<SpriteComponent>("bullet", 3, false, 4, 4);
+				projectile.add_component<SpriteComponent>("bullet-texture", 3, false, 4, 4);
 				projectile.add_component<BoxColliderComponent>(4, 4);
 				projectile.add_component<ProjectileComponent>(
 					emitter.damage,

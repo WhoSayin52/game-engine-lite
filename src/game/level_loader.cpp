@@ -49,7 +49,7 @@ void LevelLoader::load_level(sol::state& lua, SDL_Renderer* renderer, Registry* 
 	while (true) {
 		sol::optional<sol::table> has_asset{ assets[i] };
 
-		if (has_asset != sol::nullopt) {
+		if (has_asset == sol::nullopt) {
 			break;
 		}
 
@@ -149,8 +149,116 @@ void LevelLoader::load_level(sol::state& lua, SDL_Renderer* renderer, Registry* 
 		}
 
 		// Components
+		sol::optional<sol::table> has_component{ entity["components"] };
+		if (has_component != sol::nullopt) {
 
-		
+			sol::optional<sol::table> transform{ entity["components"]["transform"] };
+			if (transform != sol::nullopt) {
+				e.add_component<TransformComponent>(
+					glm::dvec2(
+						entity["components"]["transform"]["position"]["x"],
+						entity["components"]["transform"]["position"]["y"]
+					),
+					glm::dvec2(
+						entity["components"]["transform"]["scale"]["x"],
+						entity["components"]["transform"]["scale"]["y"]
+					),
+					entity["components"]["transform"]["rotation"].get_or(0.0)
+				);
+			}
+
+			sol::optional<sol::table> rigidbody{ entity["components"]["rigidbody"] };
+			if (rigidbody != sol::nullopt) {
+				e.add_component<RigidbodyComponent>(
+					glm::dvec2(
+						entity["components"]["rigidbody"]["velocity"]["x"].get_or(0.0),
+						entity["components"]["rigidbody"]["velocity"]["y"].get_or(0.0)
+					)
+				);
+			}
+
+			sol::optional<sol::table> sprite{ entity["components"]["sprite"] };
+			if (sprite != sol::nullopt) {
+				e.add_component<SpriteComponent>(
+					entity["components"]["sprite"]["texture_asset_id"],
+					entity["components"]["sprite"]["z_index"].get_or(1),
+					entity["components"]["sprite"]["fixed"].get_or(false),
+					entity["components"]["sprite"]["width"],
+					entity["components"]["sprite"]["height"],
+					entity["components"]["sprite"]["src_rect_x"].get_or(0),
+					entity["components"]["sprite"]["src_rect_y"].get_or(0)
+				);
+			}
+
+			sol::optional<sol::table> animation{ entity["components"]["animation"] };
+			if (animation != sol::nullopt) {
+				e.add_component<AnimationComponent>(
+					entity["components"]["animation"]["num_frames"],
+					entity["components"]["animation"]["frame_delay"]
+				);
+			}
+
+			sol::optional<sol::table> collider{ entity["components"]["boxcollider"] };
+			if (collider != sol::nullopt) {
+				e.add_component<BoxColliderComponent>(
+					entity["components"]["boxcollider"]["width"],
+					entity["components"]["boxcollider"]["height"],
+					glm::dvec2(
+						entity["components"]["boxcollider"]["offset"]["x"].get_or(0.0),
+						entity["components"]["boxcollider"]["offset"]["y"].get_or(0.0)
+					)
+				);
+			}
+
+			sol::optional<sol::table> health{ entity["components"]["health"] };
+			if (health != sol::nullopt) {
+				e.add_component<HealthComponent>(
+					static_cast<int>(entity["components"]["health"]["health_percentage"].get_or(100))
+				);
+			}
+
+			sol::optional<sol::table> projectile_emitter{ entity["components"]["projectile_emitter"] };
+			if (projectile_emitter != sol::nullopt) {
+				e.add_component<ProjectileEmitterComponent>(
+					glm::dvec2(
+						entity["components"]["projectile_emitter"]["projectile_velocity"]["x"],
+						entity["components"]["projectile_emitter"]["projectile_velocity"]["y"]
+					),
+					static_cast<int>(entity["components"]["projectile_emitter"]["hit_percentage_damage"].get_or(10)),
+					static_cast<double>(entity["components"]["projectile_emitter"]["emission_delay"].get_or(2.0)),
+					static_cast<double>(entity["components"]["projectile_emitter"]["projectile_duration"].get_or(10)),
+					entity["components"]["projectile_emitter"]["friendly"].get_or(false)
+				);
+			}
+
+			sol::optional<sol::table> camera_follow{ entity["components"]["camera_follow"] };
+			if (camera_follow != sol::nullopt) {
+				e.add_component<CameraComponent>();
+			}
+
+			sol::optional<sol::table> keyboard_controlled{ entity["components"]["keyboard_controller"] };
+			if (keyboard_controlled != sol::nullopt) {
+				e.add_component<KeyboardControlComponent>(
+
+					glm::dvec2(
+						entity["components"]["keyboard_controller"]["up_velocity"]["x"],
+						entity["components"]["keyboard_controller"]["up_velocity"]["y"]
+					),
+					glm::dvec2(
+						entity["components"]["keyboard_controller"]["right_velocity"]["x"],
+						entity["components"]["keyboard_controller"]["right_velocity"]["y"]
+					),
+					glm::dvec2(
+						entity["components"]["keyboard_controller"]["down_velocity"]["x"],
+						entity["components"]["keyboard_controller"]["down_velocity"]["y"]
+					),
+					glm::dvec2(
+						entity["components"]["keyboard_controller"]["left_velocity"]["x"],
+						entity["components"]["keyboard_controller"]["left_velocity"]["y"]
+					)
+				);
+			}
+		}
 		++i;
 	}
 
