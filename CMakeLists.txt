@@ -18,7 +18,7 @@ add_executable(${EXE})
 
 target_include_directories(${EXE} SYSTEM PRIVATE libs)
 target_link_libraries(${EXE} PRIVATE SDL2 SDL2_image SDL2_ttf)
-target_link_libraries(${EXE} PRIVATE lua5.4)
+target_link_libraries(${EXE} PRIVATE lua5.3)
 
 add_subdirectory(src)
 

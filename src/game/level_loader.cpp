@@ -8,9 +8,12 @@
 #include "../components/projectile_component.hpp"
 #include "../components/projectile_emitter_component.hpp"
 #include "../components/rigidbody_component.hpp"
+#include "../components/script_component.hpp"
 #include "../components/sprite_component.hpp"
 #include "../components/text_label_component.hpp"
 #include "../components/transform_component.hpp"
+
+#include <sol/sol.hpp>
 
 #include <fstream>
 
@@ -256,6 +259,16 @@ void LevelLoader::load_level(sol::state& lua, SDL_Renderer* renderer, Registry* 
 						entity["components"]["keyboard_controller"]["left_velocity"]["x"],
 						entity["components"]["keyboard_controller"]["left_velocity"]["y"]
 					)
+				);
+			}
+
+			sol::optional<sol::table> script{ entity["components"]["on_update_script"] };
+			if (script != sol::nullopt) {
+
+				sol::function func = entity["components"]["on_update_script"][0];
+
+				e.add_component<ScriptComponent>(
+					func
 				);
 			}
 		}

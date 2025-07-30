@@ -17,6 +17,7 @@
 #include "../systems/render_health_system.hpp"
 #include "../systems/render_system.hpp"
 #include "../systems/render_text_system.hpp"
+#include "../systems/script_system.hpp"
 
 #include <SDL2/SDL_image.h>
 
@@ -139,6 +140,10 @@ void Game::setup() {
 	registry->add_system<RenderGuiSystem>();
 	registry->add_system<ProjectileDurationSystem>();
 	registry->add_system<ProjectileEmitSystem>();
+	registry->add_system<ScriptSystem>();
+
+	// Creating Lua bindings
+	registry->get_system<ScriptSystem>().create_lua_bindings(lua);
 
 	LevelLoader loader{};
 	lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
@@ -193,6 +198,7 @@ void Game::update() {
 	registry->get_system<AnimationSystem>().update(delta_time);
 	registry->get_system<CollisionSystem>().update(*event_manager);
 	registry->get_system<MovementSystem>().update(delta_time);
+	registry->get_system<ScriptSystem>().update(delta_time, SDL_GetTicks());
 	registry->get_system<CameraMovementSystem>().update(&camera);
 	registry->get_system<ProjectileDurationSystem>().update(delta_time);
 	registry->get_system<ProjectileEmitSystem>().update(*registry, delta_time);
