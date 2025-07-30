@@ -141,7 +141,7 @@ void Game::setup() {
 	registry->add_system<ProjectileEmitSystem>();
 
 	LevelLoader loader{};
-	lua.open_libraries(sol::lib::base, sol::lib::math);
+	lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
 	loader.load_level(lua, renderer, registry.get(), asset_manager.get(), 1);
 }
 
