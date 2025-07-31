@@ -147,7 +147,7 @@ void Game::setup() {
 
 	LevelLoader loader{};
 	lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
-	loader.load_level(lua, renderer, registry.get(), asset_manager.get(), 1);
+	loader.load_level(lua, renderer, registry.get(), asset_manager.get(), 2);
 }
 
 void Game::input() {
