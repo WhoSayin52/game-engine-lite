@@ -116,8 +116,8 @@ void Game::init() {
 	is_running = true;
 }
 
-void Game::run() {
-	setup();
+void Game::run(int level) {
+	setup(level);
 	while (is_running) {
 		input();
 		update();
@@ -125,7 +125,7 @@ void Game::run() {
 	}
 }
 
-void Game::setup() {
+void Game::setup(int level) {
 	//Add systems
 	registry->add_system<AnimationSystem>();
 	registry->add_system<CameraMovementSystem>();
@@ -147,7 +147,7 @@ void Game::setup() {
 
 	LevelLoader loader{};
 	lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os);
-	loader.load_level(lua, renderer, registry.get(), asset_manager.get(), 1);
+	loader.load_level(lua, renderer, registry.get(), asset_manager.get(), level);
 }
 
 void Game::input() {

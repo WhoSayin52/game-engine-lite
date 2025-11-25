@@ -28,8 +28,8 @@ public:
 	Game(const Game&) = delete;
 	Game operator=(const Game&) = delete;
 	void init();
-	void run();
-	void setup();
+	void run(int level);
+	void setup(int level);
 	void input();
 	void update();
 	void render();

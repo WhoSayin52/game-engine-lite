@@ -11,7 +11,7 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(Lua REQUIRED)
 
-file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(CREATE_LINK ${CMAKE_SOURCE_DIR}/assets assets SYMBOLIC)
 
 set(EXE game_engine)
 add_executable(${EXE})
