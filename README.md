@@ -10,12 +10,14 @@
 A two-level top-down game coded from scratch in C++.  
 The player controls a chopper and is tasked with eliminating all enemy units.
 
-### Tools:
-- SDL2
-- ImGui
-- Lua (as a scripting language)
-- Sol2
-- CMake
+### Tools
+![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![SDL2](https://img.shields.io/badge/SDL2-FF0000?style=for-the-badge&logo=SDL&logoColor=white)
+![ImGui](https://img.shields.io/badge/ImGui-FF6C37?style=for-the-badge&logo=imgui&logoColor=white)
+![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
+![Sol2](https://img.shields.io/badge/Sol2-3C873A?style=for-the-badge&logo=lua&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
+
 
 ## Screenshots
 
@@ -66,6 +68,7 @@ cmake --build build --config Release # or Debug if desired
 - Move the character using arrow keys
 - Fire projectiles using spacebar
 - Enter debug mode using F1
+
 
 
 
