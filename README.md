@@ -56,7 +56,8 @@ cmake --build build --config Release # or Debug if desired
 ```
 3. Run the game from the shell, passing an argument (1 or 2) to select a level:
 ```bash
-./path/to/exe 2   # Example: start on level 2
+# The executable can be found in ./build/Release or ./build/Debug
+./path/to/exe 2   # Example: start on level 2 
 ```
 - Level 1 = Grassland
 - Level 2 = Desert
@@ -65,6 +66,7 @@ cmake --build build --config Release # or Debug if desired
 - Move the character using arrow keys
 - Fire projectiles using spacebar
 - Enter debug mode using F1
+
 
 
 
