@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]) {
 
-	int level{ 1 };
+	int level{ 2 };
 
 	if (argc == 2) {
 		level = std::stoi(argv[1]);
