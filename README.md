@@ -10,7 +10,7 @@
 A two-level top-down game coded from scratch in C++.  
 The player controls a chopper and is tasked with eliminating all enemy units.
 
-### Tools used
+### Tools:
 - SDL2
 - ImGui
 - Lua (as a scripting language)
@@ -65,5 +65,6 @@ cmake --build build --config Release # or Debug if desired
 - Move the character using arrow keys
 - Fire projectiles using spacebar
 - Enter debug mode using F1
+
 
 
