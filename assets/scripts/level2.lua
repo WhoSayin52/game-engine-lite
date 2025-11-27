@@ -5,7 +5,7 @@ Level = {
     assets = {
         [0] =
         { type = "texture", id = "tilemap-texture",             file = exe_dir .. "/../assets/tilemaps/desert.png" },
-        { type = "texture", id = "tank-texture",                file = exe_dir .. "/../assets/images/tank-panther-spritesheet.png" },
+        { type = "texture", id = "chopper-texture",             file = exe_dir .. "/../assets/images/chopper-green-spritesheet.png" },
         { type = "texture", id = "su27-texture",                file = exe_dir .. "/../assets/images/su27-spritesheet.png" },
         { type = "texture", id = "f22-texture",                 file = exe_dir .. "/../assets/images/f22-spritesheet.png" },
         { type = "texture", id = "fw190-texture",               file = exe_dir .. "/../assets/images/fw190-spritesheet.png" },
@@ -108,13 +108,17 @@ Level = {
                     velocity = { x = 0.0, y = 0.0 }
                 },
                 sprite = {
-                    texture_asset_id = "tank-texture",
+                    texture_asset_id = "chopper-texture",
                     width = 32,
                     height = 32,
-                    z_index = 6,
+                    z_index = 4,
                     fixed = false,
                     src_rect_x = 0,
                     src_rect_y = 0
+                },
+                animation = {
+                    num_frames = 2,
+                    frame_delay = 0.1 -- fps
                 },
                 boxcollider = {
                     width = 32,
@@ -132,10 +136,10 @@ Level = {
                     friendly = true
                 },
                 keyboard_controller = {
-                    up_velocity = { x = 0, y = -30 },
-                    right_velocity = { x = 30, y = 0 },
-                    down_velocity = { x = 0, y = 30 },
-                    left_velocity = { x = -30, y = 0 }
+                    up_velocity = { x = 0, y = -50 },
+                    right_velocity = { x = 50, y = 0 },
+                    down_velocity = { x = 0, y = 50 },
+                    left_velocity = { x = -50, y = 0 }
                 },
                 camera_follow = {
                     follow = true

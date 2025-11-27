@@ -17,8 +17,8 @@ Level = {
     ----------------------------------------------------
     assets = {
         [0] =
-        { type = "texture", id = "tilemap-texture-day",             file = exe_dir .. "/../assets/tilemaps/jungle.png" },
-        { type = "texture", id = "tilemap-texture-night",             file = exe_dir .. "/../assets/tilemaps/jungle-night.png" },
+        { type = "texture", id = "tilemap-texture-day",         file = exe_dir .. "/../assets/tilemaps/jungle.png" },
+        { type = "texture", id = "tilemap-texture-night",       file = exe_dir .. "/../assets/tilemaps/jungle-night.png" },
         { type = "texture", id = "chopper-texture",             file = exe_dir .. "/../assets/images/chopper-green-spritesheet.png" },
         { type = "texture", id = "su27-texture",                file = exe_dir .. "/../assets/images/su27-spritesheet.png" },
         { type = "texture", id = "f22-texture",                 file = exe_dir .. "/../assets/images/f22-spritesheet.png" },
