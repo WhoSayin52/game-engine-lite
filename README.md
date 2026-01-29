@@ -1,45 +1,74 @@
-# Ray-Trace Renderer
-
-<img width="1602" height="940" alt="main" src="https://github.com/user-attachments/assets/dae268a8-0bc1-4bc5-940b-2f3ad2093a0c" />
+# Game Engine Lite / Game From Scratch
 
 ## Table of Contents
 - [Description](#description)
-- [Learning Objectives](#learning-objectives)
 - [Screenshots](#screenshots)
 - [Installation](#installation)
-- [Conclusion](#conclusion)
+- [Controls](#controls)
 
 ## Description
-A real-time 3D ray-trace renderer built from scratch using only the Win32 API.  
-The renderer implements the Phong lighting model and supports shadows and reflections, with all rendering performed on the CPU.
+A two-level top-down game coded from scratch in C++.  
+The player controls a chopper and is tasked with eliminating all enemy units.
 
-## Learning Objectives
-1. First steps into real-time graphics programming, including lighting models (Phong lighting), shadows, reflections, ray casting, and basic collision detection.
-2. A hands-on introduction to the Win32 API and the Windows message loop, including `VirtualAlloc`, `WindowProc`, `DefWindowProc`, and `PostMessage`.
-3. A deeper understanding of low-level memory management concepts such as allocation granularity, memory pages, alignment, and manual memory management.
-4. Applying linear algebra to real-time applications, for example using rotation matrices to convert between camera space and world space.
-5. Rendering from scratch using a software backbuffer and GDI via `StretchDIBits`.
+### Tools
+![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![SDL2](https://img.shields.io/badge/SDL2-FF0000?style=for-the-badge&logo=SDL&logoColor=white)
+![ImGui](https://img.shields.io/badge/ImGui-FF6C37?style=for-the-badge&logo=imgui&logoColor=white)
+![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
+![Sol2](https://img.shields.io/badge/Sol2-3C873A?style=for-the-badge&logo=lua&logoColor=white)
+![CMake](https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white)
+
 
 ## Screenshots
 
-### No Lighting
-<img width="1602" height="940" alt="no_light" src="https://github.com/user-attachments/assets/b120d2c3-db0d-4ce1-a862-23878b4a1a5f" />
+### Starting Position
+<img width="828" height="666" alt="Screenshot from 2025-11-27 12-10-57" src="https://github.com/user-attachments/assets/fbc0372e-7871-49ce-b1c0-4dbcccaeec34" />
+<img width="828" height="666" alt="Screenshot from 2025-11-27 12-22-24" src="https://github.com/user-attachments/assets/9bce40c9-4931-42ce-9e84-edd8b22d5bc0" />
 
-### Lighting
-<img width="1602" height="940" alt="lighting" src="https://github.com/user-attachments/assets/78b5850e-b83e-4889-9231-8477566e0a19" />
+### Full Map
+<img width="1628" height="1266" alt="Screenshot from 2025-11-27 12-13-46" src="https://github.com/user-attachments/assets/063df3e0-37a4-434b-a92d-5c9d41513bdb" />
+<img width="2588" height="1986" alt="Screenshot from 2025-11-27 12-21-28" src="https://github.com/user-attachments/assets/acd98169-fcce-4a81-8b6e-e4065c68e7ee" />
 
-### Shadows and Reflections
-<img width="1602" height="940" alt="final" src="https://github.com/user-attachments/assets/0b1ec33c-f27a-4632-866c-bc24e0df3b45" />
-<img width="1602" height="940" alt="extra" src="https://github.com/user-attachments/assets/7590973c-ba9f-49e9-9e84-d2bbadfe9939" />
+### Day/Night Cycle
+<img width="1628" height="1266" alt="Screenshot from 2025-11-27 12-14-45" src="https://github.com/user-attachments/assets/b3a3eae2-8b9d-48d7-8ae3-d708ad0e3deb" />
+
+### Debug Mode
+<img width="828" height="666" alt="Screenshot from 2025-11-27 14-37-59" src="https://github.com/user-attachments/assets/84278b46-7efd-48ba-a9bb-37d173451692" />
 
 ## Installation
 
-## Conclusion
-While there is still plenty of room for improvement—such as supporting objects beyond spheres or adding multi-threading—this project successfully achieved its goal of building a strong foundation in graphics programming and understanding the graphics pipeline.
+### Disclaimer
+This game has been developed and tested on **Ubuntu only**.
 
-The next steps are to:
-- Implement a rasterizer
-- Learn DirectX 11
-- Progress to DirectX 12
+### Prequistes:
+- SDL2
+- SDL2 images
+- SDL2 ttf (fonts)
+- CMake
 
-<img width="1602" height="940" alt="conclusion" src="https://github.com/user-attachments/assets/449d5593-c30b-4308-8dec-dd6d1d695bd7" />
+1. Clone the repository: 
+```bash
+git clone <repo-url>
+cd game-engine-lite
+```
+2. Build the project:
+```bash
+cmake --preset default
+cmake --build build --config Release # or Debug if desired
+```
+3. Run the game from the shell, passing an argument (1 or 2) to select a level:
+```bash
+# The executable can be found in ./build/Release or ./build/Debug
+./path/to/exe 2   # Example: start on level 2 
+```
+- Level 1 = Grassland
+- Level 2 = Desert
+
+## Controls
+- Move the character using arrow keys
+- Fire projectiles using spacebar
+- Enter debug mode using F1
+
+
+
+
